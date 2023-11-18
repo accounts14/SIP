@@ -2,6 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\SchoolController;
+use App\Http\Controllers\Api\TestimonyController;
+use App\Http\Controllers\Api\RegisterController;
+use App\Http\Controllers\Auth\VerificationController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +19,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin');
+Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member');
 
-Route::middleware(['auth:api'])->prefix('adm')->group(function () {
+Route::middleware(['auth:api'])->prefix('api')->group(function () {
     // Web 
     Route::get('products', 'WebProductController@index');
     // location
@@ -26,4 +31,12 @@ Route::middleware(['auth:api'])->prefix('adm')->group(function () {
     Route::get('locations/{type}', 'LocationsController@getByType')
     ->where('type', 'province|city|district|subdistrict')
     ->name('locations.get');
+
+    Route::post('schools/{id}', [SchoolController::class, 'show']);
+    Route::post('schools/{slug}', [SchoolController::class, 'show']);
+    Route::post('schools', [SchoolController::class, 'index']);
+    Route::post('testimonies', [TestimonyController::class, 'store']);
+
 });
+
+Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');

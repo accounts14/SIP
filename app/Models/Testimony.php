@@ -2,63 +2,22 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\BrandScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
 
 class Testimony extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    protected $primaryKey = 'id';
+    protected $fillable = ['user_id', 'user_name', 'school_id', 'content'];
 
-    protected $fillable = [
-        'product_id',
-        'customer_id',
-        'rating',
-        'title',
-        'image',
-        'description'
-    ];
-
-    public function brand()
+    public function user()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+    public function school()
     {
-        parent::boot();
-        static::addGlobalScope(new BrandScope);
-
-        $user = Auth::user();
-        if ($user) {
-            static::creating(function ($column) {
-                $column->brand_id = Auth::user()->brand_id;
-                $column->created_by = Auth::user()->id;
-            });
-    
-            static::updating(function ($column) {
-                $column->modified_by = Auth::user()->id;
-            });
-        }
+        return $this->belongsTo(School::class);
     }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class);
-    }
-
-    public function createdCustomer()
-    {
-        return $this->belongsTo(CreatedCustomer::class);
-    }
-    
 }
