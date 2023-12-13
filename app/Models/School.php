@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class School extends Model
 {
@@ -33,4 +34,17 @@ class School extends Model
         'banner',
         'slug',
     ];
+
+    public function scopeFindByIdOrSlug($query, $param)
+    {
+        if (is_numeric($param)) {
+            return $query->where('id', $param)->first();
+        } else {
+            return $query->where('slug', $param)->first();
+        }
+    }
+
+    public function testimonies() {
+        return $this->hasMany(Testimony::class);
+    }
 }

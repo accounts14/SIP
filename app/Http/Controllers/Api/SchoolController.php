@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SchoolRequest;
+use App\Http\Resources\SchoolResource;
 use App\Models\School;
 use App\Models\Testimony;
 use App\Models\Province;
@@ -15,27 +17,19 @@ class SchoolController extends Controller
     public function index()
     {
         $schools = School::all();
-        $schoolsWithSlug = $schools->map(function ($school) {
-            $school['slug'] = Str::slug($school['name']);
-            return $school;
-        });
-        return response()->json(['data' => $schoolsWithSlug]);
+        return SchoolResource::collection($schools);
     }
 
     public function show($identifier)
     {
-        if (is_numeric($identifier)) {
-            $school = School::find($identifier);
-        } else {
-            $school = School::where('slug', $identifier)->first();
-        }
+        $school = School::with('testimonies')->findByIdOrSlug($identifier);
+        return new SchoolResource($school);
+    }
 
-        if (!$school) {
-            return response()->json(['message' => 'Not Found'], 404);
-        }
-
-        $testimonies = Testimony::where('school_id', $school->id)->get();
-
-        return response()->json(['school_data' => $school, 'testimonies' => $testimonies], 200);
+    public function store(SchoolRequest $request) {
+        $validated          = $request->validated();
+        $validated['slug']  = Str::slug($validated['name']);
+        $school             = School::create($validated);
+        return new SchoolResource($school);
     }
 }

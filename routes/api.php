@@ -1,11 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\TestimonyController;
-use App\Http\Controllers\Api\RegisterController;
-use App\Http\Controllers\Auth\VerificationController;
 
 
 /*
@@ -19,6 +17,8 @@ use App\Http\Controllers\Auth\VerificationController;
 |
 */
 
+Route::post('register', RegisterController::class);
+
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
@@ -29,14 +29,14 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     // name only : /api/locations/{type}?name=YourName
     // id & name : /api/locations/{type}?id=1&name=YourName
     Route::get('locations/{type}', 'LocationsController@getByType')
-    ->where('type', 'province|city|district|subdistrict')
-    ->name('locations.get');
+        ->where('type', 'province|city|district|subdistrict')
+        ->name('locations.get');
 
-    Route::post('schools/{id}', [SchoolController::class, 'show']);
-    Route::post('schools/{slug}', [SchoolController::class, 'show']);
-    Route::post('schools', [SchoolController::class, 'index']);
+    Route::get('schools/{identifier}', [SchoolController::class, 'show'])
+        ->where('identifier', '[0-9]+|[a-z0-9-]+');
+    Route::get('schools', [SchoolController::class, 'index']);
+    Route::post('/schools', [SchoolController::class, 'store']);
+    
     Route::post('testimonies', [TestimonyController::class, 'store']);
 
 });
-
-Route::post('/register', App\Http\Controllers\Api\RegisterController::class)->name('register');
