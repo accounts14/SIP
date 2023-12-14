@@ -8,17 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class City extends Model
 {
     use HasFactory;
+    
+    protected $fillable = ['name', 'regency_id'];
 
-    protected $primaryKey = 'city_id';
-
-    public function province()
+    public function schools()
     {
-        return $this->belongsTo(Province::class);
+        return $this->hasMany(School::class);
+    }
+
+    public function regency()
+    {
+        return $this->belongsTo(Regency::class);
     }
 
     public function districts()
     {
-        return $this->hasMany(District::class, 'city_id');
+        return $this->hasMany(District::class);
     }
 
 }

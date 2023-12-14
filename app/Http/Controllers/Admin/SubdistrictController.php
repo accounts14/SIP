@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\SubdistrictRequest;
+use App\Http\Resources\SubdistrictResource;
+use App\Models\SubDistrict;
+
+class SubdistrictController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $subdistrict = SubDistrict::with('district', 'schools')->get();
+        return SubdistrictResource::collection($subdistrict);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(SubdistrictRequest $request)
+    {
+        $subdistrict = SubDistrict::create($request->all());
+        $subdistrict->load('district', 'schools');
+        return new SubdistrictResource($subdistrict);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $subdistrict = SubDistrict::findOrFail($id);
+        $subdistrict->load('district', 'schools');
+        return new SubdistrictResource($subdistrict);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(SubdistrictRequest $request, string $id)
+    {
+        SubDistrict::where('id', $id)->update($request->all());
+        return response()->json(['status' => 'success', 'message' => 'Data successfully updated']);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        SubDistrict::where('id', $id)->delete();
+        return response()->json(['status' => 'success', 'message' => 'Data successfully deleted']);
+    }
+}

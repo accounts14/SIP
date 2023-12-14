@@ -9,10 +9,16 @@ class SubDistrict extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'subdis_id';
+    protected $fillable = ['name', 'district_id'];
 
-    public function districts()
+    protected $table = 'subdistricts';
+
+    public function district(){
+        return $this->belongsTo(District::class);
+    }
+
+    public function schools()
     {
-        return $this->belongsTo(District::class, 'subdis_id');
+        return $this->hasMany(School::class, 'subdistrict_id');
     }
 }

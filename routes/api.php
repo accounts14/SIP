@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\CityController;
+use App\Http\Controllers\Admin\DistrictController;
+use App\Http\Controllers\Admin\ProvinceController;
+use App\Http\Controllers\Admin\RegencyController;
+use App\Http\Controllers\Admin\SubdistrictController;
 use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\TestimonyController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +23,7 @@ use App\Http\Controllers\Api\TestimonyController;
 
 Route::post('register', RegisterController::class);
 
-Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member');
+Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
     // Web 
@@ -38,5 +42,11 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('/schools', [SchoolController::class, 'store']);
     
     Route::post('testimonies', [TestimonyController::class, 'store']);
+
+    Route::apiResource('provinces', ProvinceController::class);
+    Route::apiResource('regencies', RegencyController::class);
+    Route::apiResource('cities', CityController::class);
+    Route::apiResource('districts', DistrictController::class);
+    Route::apiResource('subdistricts', SubdistrictController::class);
 
 });

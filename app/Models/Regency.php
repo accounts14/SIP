@@ -5,25 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class District extends Model
+class Regency extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'city_id'];
+    protected $fillable = ['name', 'province_id'];
 
-    public function city()
+    public function province()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(Province::class);
     }
 
-    public function subdistricts()
+    public function cities()
     {
-        return $this->hasMany(SubDistrict::class);
+        return $this->hasMany(City::class);
     }
 
     public function schools()
     {
         return $this->hasMany(School::class);
     }
-
 }
