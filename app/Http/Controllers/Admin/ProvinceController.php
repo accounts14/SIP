@@ -13,9 +13,10 @@ class ProvinceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $provinces = Province::with('regencies')->get();
+        $limit = $request->get('limit', 25);
+        $provinces = Province::with('cities')->paginate($limit);
         return ProvinceResource::collection($provinces);
     }
 

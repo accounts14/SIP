@@ -40,6 +40,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         ->where('identifier', '[0-9]+|[a-z0-9-]+');
     Route::get('schools', [SchoolController::class, 'index']);
     Route::post('/schools', [SchoolController::class, 'store']);
+    Route::get('get-nearest-schools', [SchoolController::class, 'getNearestSchools']);
     
     Route::post('testimonies', [TestimonyController::class, 'store']);
 

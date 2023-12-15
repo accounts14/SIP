@@ -9,12 +9,12 @@ class SubDistrict extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'district_id'];
+    protected $fillable = ['subdis_name', 'dis_id'];
 
     protected $table = 'subdistricts';
 
     public function district(){
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(District::class, 'dis_id', 'dis_id');
     }
 
     public function schools()

@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DistrictRequest;
 use App\Http\Resources\DistrictResource;
 use App\Models\District;
+use Illuminate\Http\Request;
 
 class DistrictController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $districts = District::with('subdistricts')->get();
+        $limit = $request->get('limit', 25);
+        $districts = District::with('subdistricts')->paginate($limit);
         return DistrictResource::collection($districts);
     }
 

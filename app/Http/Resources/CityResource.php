@@ -15,10 +15,10 @@ class CityResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'        => $this->id,
-            'name'      => $this->name,
-            'regency'   => $this->whenLoaded('regency', function() {
-                return new RegencyResource($this->regency);
+            'city_id'   => $this->city_id,
+            'city_name' => $this->city_name,
+            'province'  => $this->whenLoaded('province', function() {
+                return new ProvinceResource($this->province);
             }),
             'schools'   => $this->whenLoaded('schools', function() {
                 return SchoolResource::collection($this->schools);

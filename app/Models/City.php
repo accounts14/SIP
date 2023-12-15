@@ -9,21 +9,21 @@ class City extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['name', 'regency_id'];
+    protected $fillable = ['name', 'prov_id'];
 
     public function schools()
     {
         return $this->hasMany(School::class);
     }
 
-    public function regency()
+    public function province()
     {
-        return $this->belongsTo(Regency::class);
+        return $this->belongsTo(Province::class, 'prov_id', 'prov_id');
     }
 
     public function districts()
     {
-        return $this->hasMany(District::class);
+        return $this->hasMany(District::class, 'dis_id', 'city_id');
     }
 
 }

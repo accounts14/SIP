@@ -15,8 +15,8 @@ class SubdistrictResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'        => $this->id,
-            'name'      => $this->name,
+            'subdis_id'     => $this->subdis_id,
+            'subdis_name'   => $this->subdis_name,
             'district'  => $this->whenLoaded('district', function() {
                 return new DistrictResource($this->district);
             }),

@@ -13,9 +13,10 @@ class CityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cities = City::with('districts')->get();
+        $limit = $request->get('limit', 25);
+        $cities = City::with('districts')->paginate($limit);
         return CityResource::collection($cities);
     }
 
@@ -25,7 +26,7 @@ class CityController extends Controller
     public function store(CityRequest $request)
     {
         $city = City::create($request->all());
-        $city->load('regency', 'districts');
+        $city->load('province', 'districts');
         return new CityResource($city);
     }
 
@@ -35,7 +36,7 @@ class CityController extends Controller
     public function show(string $id)
     {
         $city = City::findOrFail($id);
-        $city->load('regency', 'districts');
+        $city->load('province', 'districts');
         return new CityResource($city);
     }
 

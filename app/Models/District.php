@@ -9,16 +9,16 @@ class District extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'city_id'];
+    protected $fillable = ['dis_name', 'city_id'];
 
     public function city()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(City::class, 'city_id', 'dis_id');
     }
 
     public function subdistricts()
     {
-        return $this->hasMany(SubDistrict::class);
+        return $this->hasMany(SubDistrict::class, 'dis_id', 'dis_id');
     }
 
     public function schools()

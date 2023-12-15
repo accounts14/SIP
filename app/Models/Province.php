@@ -9,11 +9,11 @@ class Province extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['prov_name', 'status'];
 
-    public function regencies()
+    public function cities()
     {
-        return $this->hasMany(Regency::class);
+        return $this->hasMany(City::class, 'prov_id', 'prov_id');
     }
 
     public function schools()

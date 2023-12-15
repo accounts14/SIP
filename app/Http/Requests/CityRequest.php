@@ -23,8 +23,8 @@ class CityRequest extends FormRequest
     {
         $cityId = $this->route('city');
         return [
-            'name'          => 'required|string|unique:cities,name,'.$cityId.',id',
-            'regency_id'    => 'required|numeric|exists:regencies,id'
+            'city_name'     => 'required|string|unique:cities,city_name,'.$cityId.',id',
+            'prov_id'       => 'required|numeric|exists:provinces,id'
         ];
     }
 }

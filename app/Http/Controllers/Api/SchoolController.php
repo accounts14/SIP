@@ -10,6 +10,7 @@ use App\Models\Testimony;
 use App\Models\Province;
 use App\Models\City;
 use App\Models\District;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class SchoolController extends Controller
@@ -31,5 +32,23 @@ class SchoolController extends Controller
         $validated['slug']  = Str::slug($validated['name']);
         $school             = School::create($validated);
         return new SchoolResource($school);
+    }
+
+    public function getNearestSchools(Request $request) {
+        $userLatitude = $request->get('latitude');
+        $userLongitude = $request->get('longitude');
+
+        $distance = 10;
+
+        $nearestSchools = School::select('*')
+            ->selectRaw(
+                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance',
+                [$userLatitude, $userLongitude, $userLatitude]
+            )
+            ->having('distance', '<=', $distance)
+            ->orderBy('distance')
+            ->get();
+
+        return response()->json(['nearestSchools' => $nearestSchools]);
     }
 }

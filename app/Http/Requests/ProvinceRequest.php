@@ -23,7 +23,7 @@ class ProvinceRequest extends FormRequest
     {
         $provId = $this->route('province');
         return [
-            'name'  => 'required|unique:provinces,name,'.$provId.',id',
+            'prov_name'  => 'required|unique:provinces,prov_name,'.$provId.',id',
         ];
     }
 }
