@@ -51,4 +51,8 @@ class School extends Model
     public function schoolLevels() :BelongsTo {
         return $this->belongsTo(SchoolLevel::class, 'level');
     }
+
+    public function province() :BelongsTo {
+        return $this->belongsTo(Province::class, 'province_id', 'prov_id');
+    }
 }

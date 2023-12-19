@@ -59,20 +59,29 @@ class SchoolController extends Controller
     }
 
     public function getNearestSchoolsByLocation(Request $request) {
-        $userLatitude = $request->get('latitude');
-        $userLongitude = $request->get('longitude');
+        $locType = $request->get('location_type');
+        $locId = $request->get('location_id');
+        
+        $filteredSchools = School::with('schoolLevels');
+        
+        switch ($locType) {
+            case 'province':
+                $filteredSchools->where('province_id', $locId);
+                break;
+            case 'city':
+                $filteredSchools->where('city_id', $locId);
+                break;
+            case 'district':
+                $filteredSchools->where('district_id', $locId);
+                break;
+            case 'subdistrict':
+                $filteredSchools->where('subdistrict_id', $locId);
+                break;
+            
+            default:
+                break;
+        }
 
-        $distance = 10;
-
-        $nearestSchools = School::select('*')
-            ->selectRaw(
-                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance',
-                [$userLatitude, $userLongitude, $userLatitude]
-            )
-            ->having('distance', '<=', $distance)
-            ->orderBy('distance')
-            ->get();
-
-        return response()->json(['nearestSchools' => $nearestSchools]);
+        return SchoolResource::collection($filteredSchools->get());
     }
 }

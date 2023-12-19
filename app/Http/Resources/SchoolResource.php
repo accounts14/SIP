@@ -38,6 +38,8 @@ class SchoolResource extends JsonResource
             'avatar'        => $this->avatar,
             'banner'        => $this->banner,
             'slug'          => $this->slug,
+            'province_id'   => $this->province_id,
+            'province'      => $this->province,
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);
             }),
