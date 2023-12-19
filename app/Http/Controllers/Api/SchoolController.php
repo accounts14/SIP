@@ -6,10 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
 use App\Models\School;
-use App\Models\Testimony;
-use App\Models\Province;
-use App\Models\City;
-use App\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -23,7 +19,7 @@ class SchoolController extends Controller
 
     public function show($identifier)
     {
-        $school = School::with('testimonies')->findByIdOrSlug($identifier);
+        $school = School::with('testimonies', 'schoolLevels')->findByIdOrSlug($identifier);
         return new SchoolResource($school);
     }
 
@@ -32,6 +28,16 @@ class SchoolController extends Controller
         $validated['slug']  = Str::slug($validated['name']);
         $school             = School::create($validated);
         return new SchoolResource($school);
+    }
+
+    public function update(SchoolRequest $request, string $id) {
+        School::where('id', $id)->update($request->all());
+        return response()->json(['status' => 'success', 'message' => 'Data successfully updated']);
+    }
+
+    public function delete(string $id) {
+        School::where('id', $id)->delete();
+        return response()->json(['status' => 'success', 'message' => 'Data successfully deleted']);
     }
 
     public function getNearestSchoolsByCoord(Request $request) {

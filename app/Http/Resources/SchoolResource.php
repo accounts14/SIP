@@ -41,6 +41,9 @@ class SchoolResource extends JsonResource
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);
             }),
+            'school_levels'  => $this->whenLoaded('schoolLevels', function() {
+                return $this->schoolLevels;
+            }),
         ];
     }
 }

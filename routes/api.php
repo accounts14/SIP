@@ -40,6 +40,8 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         ->where('identifier', '[0-9]+|[a-z0-9-]+');
     Route::get('schools', [SchoolController::class, 'index']);
     Route::post('/schools', [SchoolController::class, 'store']);
+    Route::put('/schools/{id}', [SchoolController::class, 'update']);
+    Route::delete('/schools/{id}', [SchoolController::class, 'delete']);
     Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
     Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
     

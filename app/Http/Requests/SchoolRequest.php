@@ -25,7 +25,7 @@ class SchoolRequest extends FormRequest
             'name'          => 'required',
             'type'          => 'required',
             'accrediation'  => 'nullable',
-            'level'         => 'string|nullable',
+            'level'         => 'string|required',
             'established'   => 'nullable',
             'npsn'          => 'nullable',
             'headmaster'    => 'nullable',

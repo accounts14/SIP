@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class School extends Model
 {
@@ -46,5 +46,9 @@ class School extends Model
 
     public function testimonies() {
         return $this->hasMany(Testimony::class);
+    }
+
+    public function schoolLevels() :BelongsTo {
+        return $this->belongsTo(SchoolLevel::class, 'level');
     }
 }
