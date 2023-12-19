@@ -34,7 +34,25 @@ class SchoolController extends Controller
         return new SchoolResource($school);
     }
 
-    public function getNearestSchools(Request $request) {
+    public function getNearestSchoolsByCoord(Request $request) {
+        $userLatitude = $request->get('latitude');
+        $userLongitude = $request->get('longitude');
+
+        $distance = 10;
+
+        $nearestSchools = School::select('*')
+            ->selectRaw(
+                '( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance',
+                [$userLatitude, $userLongitude, $userLatitude]
+            )
+            ->having('distance', '<=', $distance)
+            ->orderBy('distance')
+            ->get();
+
+        return response()->json(['nearestSchools' => $nearestSchools]);
+    }
+
+    public function getNearestSchoolsByLocation(Request $request) {
         $userLatitude = $request->get('latitude');
         $userLongitude = $request->get('longitude');
 
