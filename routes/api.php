@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DistrictController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\RegencyController;
+use App\Http\Controllers\Admin\SchoolLevelConroller;
 use App\Http\Controllers\Admin\SubdistrictController;
 use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Support\Facades\Route;
@@ -52,5 +53,6 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('cities', CityController::class);
     Route::apiResource('districts', DistrictController::class);
     Route::apiResource('subdistricts', SubdistrictController::class);
+    Route::apiResource('school-levels', SchoolLevelConroller::class);
 
 });
