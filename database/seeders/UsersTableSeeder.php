@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UsersTableSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class UsersTableSeeder extends Seeder
 
         User::firstOrCreate([
             'id' => 1,
+            'uuid' =>   Str::uuid(),
             'name' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => $password,
