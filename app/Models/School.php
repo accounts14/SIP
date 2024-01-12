@@ -47,4 +47,12 @@ class School extends Model
     public function testimonies() {
         return $this->hasMany(Testimony::class);
     }
+
+    public function registration() {
+        return $this->hasMany(StudentRegistration::class, 'school_id');
+    }
+
+    public function regForm() {
+        return $this->hasMany(RegistrationForm::class, 'school_id');
+    }
 }

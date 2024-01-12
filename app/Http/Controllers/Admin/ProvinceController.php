@@ -16,8 +16,11 @@ class ProvinceController extends Controller
     public function index(Request $request)
     {
         $limit = $request->get('limit', 25);
-        $provinces = Province::with('cities')->paginate($limit);
-        return ProvinceResource::collection($provinces);
+        $provinces = Province::with('cities');
+        if ($request->q) {
+            $provinces->where('prov_name', 'like', "%$request->q%");
+        }
+        return ProvinceResource::collection($provinces->paginate($limit));
     }
 
     /**

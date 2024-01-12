@@ -16,8 +16,14 @@ class DistrictController extends Controller
     public function index(Request $request)
     {
         $limit = $request->get('limit', 25);
-        $districts = District::with('subdistricts')->paginate($limit);
-        return DistrictResource::collection($districts);
+        $districts = District::with('subdistricts');
+        if ($request->q) {
+            $districts->where('dis_name', 'like', "%$request->q%");
+        }
+        if ($request->kab) {
+            $districts->where('city_id', $request->kab);
+        }
+        return DistrictResource::collection($districts->paginate($limit));
     }
 
     /**
@@ -33,9 +39,12 @@ class DistrictController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         $district = District::findOrFail($id);
+        if ($request->noLoad) {
+            return new DistrictResource($district);
+        }
         $district->load('city', 'subdistricts');
         return new DistrictResource($district);
     }

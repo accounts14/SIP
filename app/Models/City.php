@@ -9,6 +9,7 @@ class City extends Model
 {
     use HasFactory;
     
+    protected $primaryKey = 'city_id';
     protected $fillable = ['name', 'prov_id'];
 
     public function schools()

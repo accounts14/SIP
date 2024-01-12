@@ -16,8 +16,14 @@ class SubdistrictController extends Controller
     public function index(Request $request)
     {
         $limit = $request->get('limit', 25);
-        $subdistrict = SubDistrict::with('district', 'schools')->paginate($limit);
-        return SubdistrictResource::collection($subdistrict);
+        $subdistrict = SubDistrict::with('district', 'schools');
+        if ($request->q) {
+            $subdistrict->where('subdis_name', 'like', "%$request->q%");
+        }
+        if ($request->kec) {
+            $subdistrict->where('dis_id', $request->kec);
+        }
+        return SubdistrictResource::collection($subdistrict->paginate($limit));
     }
 
     /**
@@ -33,9 +39,12 @@ class SubdistrictController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         $subdistrict = SubDistrict::findOrFail($id);
+        if ($request->noLoad) {
+            return new SubdistrictResource($subdistrict);
+        }
         $subdistrict->load('district', 'schools');
         return new SubdistrictResource($subdistrict);
     }

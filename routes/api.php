@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\TestimonyController;
+use App\Http\Controllers\Api\RegistrationFormController;
+use App\Http\Controllers\Api\StudentRegistrationController;
+use App\Http\Controllers\Api\UserCandidateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,10 +39,14 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         ->where('type', 'province|city|district|subdistrict')
         ->name('locations.get');
 
-    Route::get('schools/{identifier}', [SchoolController::class, 'show'])
-        ->where('identifier', '[0-9]+|[a-z0-9-]+');
-    Route::get('schools', [SchoolController::class, 'index']);
-    Route::post('/schools', [SchoolController::class, 'store']);
+    Route::prefix('schools')->group(function() {
+        Route::get('/', [SchoolController::class, 'index']);
+        Route::get('/{identifier}', [SchoolController::class, 'show'])
+            ->where('identifier', '[0-9]+|[a-z0-9-]+');
+        Route::post('/', [SchoolController::class, 'store']);
+        Route::put('/{id}', [SchoolController::class, 'update']);
+        Route::delete('/{id}', [SchoolController::class, 'destroy']);
+    });
     Route::get('get-nearest-schools', [SchoolController::class, 'getNearestSchools']);
     
     Route::post('testimonies', [TestimonyController::class, 'store']);
@@ -49,5 +56,9 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('cities', CityController::class);
     Route::apiResource('districts', DistrictController::class);
     Route::apiResource('subdistricts', SubdistrictController::class);
-
+    
+    Route::apiResource('registration', StudentRegistrationController::class);
+    Route::apiResource('student', UserCandidateController::class);
+    Route::apiResource('registration-form', RegistrationFormController::class);
+    Route::get('registration-form/sch/{sch_id}', [RegistrationFormController::class, 'fromSchool']);
 });

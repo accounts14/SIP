@@ -16,8 +16,14 @@ class CityController extends Controller
     public function index(Request $request)
     {
         $limit = $request->get('limit', 25);
-        $cities = City::with('districts')->paginate($limit);
-        return CityResource::collection($cities);
+        $cities = City::with('districts');
+        if ($request->q) {
+            $cities->where('city_name', 'like', "%$request->q%");
+        }
+        if ($request->prov) {
+            $cities->where('prov_id', $request->prov);
+        }
+        return CityResource::collection($cities->paginate($limit));
     }
 
     /**
@@ -33,9 +39,12 @@ class CityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
         $city = City::findOrFail($id);
+        if ($request->noLoad) {
+            return new CityResource($city);
+        }
         $city->load('province', 'districts');
         return new CityResource($city);
     }

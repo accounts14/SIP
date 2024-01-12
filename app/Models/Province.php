@@ -9,6 +9,7 @@ class Province extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'prov_id';
     protected $fillable = ['prov_name', 'status'];
 
     public function cities()
