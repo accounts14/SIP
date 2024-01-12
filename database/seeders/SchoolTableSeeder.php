@@ -18,9 +18,9 @@ class SchoolTableSeeder extends Seeder
     {
         School::create([
             'name' => 'Secrash School',
-            'type' => 'Swasta',
+            'type' => 'swasta',
             'accreditation' => 'A',
-            'level' => 'SMK',
+            'level' => NULL,
             'established' => '',
             'npsn' => '1333333333333337',
             'headmaster' => 'Acil.Dev', 

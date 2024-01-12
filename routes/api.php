@@ -4,7 +4,9 @@ use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DistrictController;
 use App\Http\Controllers\Admin\ProvinceController;
 use App\Http\Controllers\Admin\RegencyController;
+use App\Http\Controllers\Admin\SchoolLevelConroller;
 use App\Http\Controllers\Admin\SubdistrictController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SchoolController;
@@ -48,6 +50,8 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         Route::delete('/{id}', [SchoolController::class, 'destroy']);
     });
     Route::get('get-nearest-schools', [SchoolController::class, 'getNearestSchools']);
+    Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
+    Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
     
     Route::post('testimonies', [TestimonyController::class, 'store']);
 
@@ -61,4 +65,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('student', UserCandidateController::class);
     Route::apiResource('registration-form', RegistrationFormController::class);
     Route::get('registration-form/sch/{sch_id}', [RegistrationFormController::class, 'fromSchool']);
+    Route::apiResource('school-levels', SchoolLevelConroller::class);
+    Route::apiResource('messages', ChatController::class);
+
 });

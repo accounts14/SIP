@@ -47,6 +47,14 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function sentMessages() {
+        return $this->morphMany(Message::class, 'sender');
+    }
+
+    public function receivedMessages() {
+        return $this->morphMany(Message::class, 'recipient');
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);

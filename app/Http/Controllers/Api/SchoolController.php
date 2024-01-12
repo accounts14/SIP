@@ -6,10 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
 use App\Models\School;
-use App\Models\Testimony;
-use App\Models\Province;
-use App\Models\City;
-use App\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -61,7 +57,7 @@ class SchoolController extends Controller
 
     public function show($identifier)
     {
-        $school = School::with('testimonies')->findByIdOrSlug($identifier);
+        $school = School::with('testimonies', 'schoolLevels')->findByIdOrSlug($identifier);
         return new SchoolResource($school);
     }
 
@@ -111,5 +107,32 @@ class SchoolController extends Controller
             ->get();
 
         return response()->json(['nearestSchools' => $nearestSchools]);
+    }
+
+    public function getNearestSchoolsByLocation(Request $request) {
+        $locType = $request->get('location_type');
+        $locId = $request->get('location_id');
+        
+        $filteredSchools = School::with('schoolLevels');
+        
+        switch ($locType) {
+            case 'province':
+                $filteredSchools->where('province_id', $locId);
+                break;
+            case 'city':
+                $filteredSchools->where('city_id', $locId);
+                break;
+            case 'district':
+                $filteredSchools->where('district_id', $locId);
+                break;
+            case 'subdistrict':
+                $filteredSchools->where('subdistrict_id', $locId);
+                break;
+            
+            default:
+                break;
+        }
+
+        return SchoolResource::collection($filteredSchools->get());
     }
 }
