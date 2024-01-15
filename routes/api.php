@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\RegistrationFormController;
 use App\Http\Controllers\Api\StudentRegistrationController;
 use App\Http\Controllers\Api\UserCandidateController;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,9 @@ Route::post('register', RegisterController::class);
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
+    Route::get('me', function() {
+        return ['user' => new UserResource(Auth::user())];
+    });
     // Web 
     Route::get('products', 'WebProductController@index');
     // location

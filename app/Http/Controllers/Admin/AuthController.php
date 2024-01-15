@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+// use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+// use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -23,12 +23,13 @@ class AuthController extends Controller
                     'expires_at' => $expired,
                 ]);
                 return response()->json([
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role'  => $user->role,
-                    'expired'  => $expired,
-                    'token' => $token->accessToken
+                    'id'        => $user->id,
+                    'name'      => $user->name,
+                    'email'     => $user->email,
+                    'role'      => $user->role,
+                    'school_id' => $user->school_id,
+                    'expired'   => $expired,
+                    'token'     => $token->accessToken
                 ], 200);
             // }
         }
