@@ -14,7 +14,7 @@ return new class extends Migration
     {
         DB::statement("UPDATE schools SET level = NULL, school_status = 1");
         Schema::table('schools', function (Blueprint $table) {
-            $table->enum('type', ['swasta', 'negri'])->change();
+            $table->enum('type', ['Swasta', 'Negeri'])->change();
             $table->unsignedBigInteger('level')->nullable()->change();
             $table->enum('accreditation', ['A', 'B', 'C', 'TT'])->nullable()->change();
             $table->text('motto')->nullable()->change();
