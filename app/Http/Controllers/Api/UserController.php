@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
@@ -23,6 +24,17 @@ class UserController extends Controller
         $param = '';
 
         $data = User::select("*");
+
+        if (!auth()->user()->school_id) {
+            $type = $request->type ?? 'app';
+            if ($type == 'app') {
+                $data->where('school_id', null);
+            } else {
+                $data->where('school_id', '!=', null)->with('school');
+            }
+        } else {
+            $data->with('school');
+        }
 
         if ($q) {
             $data->where(function($query) use ($q) {
@@ -46,9 +58,9 @@ class UserController extends Controller
                 $param .= '&orderType='.$ordtp;
             }
         }
-
+        $data->offset($ofs)->limit($limit)->orderBy($order, $ordtp);
         return response()->json([
-            'data'  => $data->offset($ofs)->limit($limit)->orderBy($order, $ordtp)->get(),
+            'data'  => UserResource::collection($data->get()),
             'count' => $count,
             'limit' => $limit,
             'nextPageUrl' => $nextPageUrl.$param,
