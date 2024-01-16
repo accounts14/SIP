@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\CityController;
 use App\Http\Controllers\Admin\DistrictController;
 use App\Http\Controllers\Admin\ProvinceController;
@@ -33,6 +34,7 @@ Route::post('register', RegisterController::class);
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('me', function() {
         return ['user' => new UserResource(Auth::user())];
     });
