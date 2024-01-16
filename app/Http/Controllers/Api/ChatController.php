@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\MessageEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageResource;
 use App\Models\AnonymousUser;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
@@ -17,9 +18,25 @@ class ChatController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $user = auth()->user();
+        $userClass = get_class($user);
+        $messages = Message::with('sender')
+            ->select(
+                DB::raw('MAX(content) as content'),
+                DB::raw('MAX(is_read) as is_read'),
+                DB::raw('MAX(created_at) as created_at'),
+            )
+            ->selectRaw("CASE WHEN sender_id = ? AND sender_type = ? THEN recipient_id ELSE sender_id END AS sender_id", [$user->id, $userClass])
+            ->selectRaw("CASE WHEN sender_id = ? AND sender_type = ? THEN recipient_type ELSE sender_type END AS sender_type", [$user->id, $userClass])
+            ->orderBy('created_at', 'DESC')
+            ->groupBy('sender_id', 'recipient_id', 'sender_type', 'recipient_type')
+            ->get()
+            ->unique("sender_id")
+            ->values();
+
+        return MessageResource::collection($messages);
     }
 
     /**
@@ -58,17 +75,46 @@ class ChatController extends Controller
 
         ]);
 
-        broadcast(new MessageEvent($sender, $recipient, $message))->toOthers();
+        $message->type = 'received';
+        $message->load('sender');
+        $broadcastedMessage = new MessageResource($message);
 
-        return ['status' => 'Message Sent!', 'message' => $message];
+        broadcast(new MessageEvent($sender, $recipient, $broadcastedMessage))->toOthers();
+
+        return ['status' => 'Message Sent!'];
     }
 
-    /**
+    /** 
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $uuid)
     {
-        //
+        $authenticatedUserId = auth()->user()->id;
+        $oppositeUserId = AnonymousUser::where('uuid', $uuid)->first()->id;
+
+        $messages = Message::where('recipient_id', $authenticatedUserId)
+            ->where('sender_id', $oppositeUserId)
+            ->orWhere(function ($query) use ($authenticatedUserId, $oppositeUserId) {
+                $query->where("recipient_id", $oppositeUserId)
+                      ->where("sender_id", $authenticatedUserId);
+            })
+            ->orderBy("created_at", "DESC")
+            ->get();
+
+        $messages = $messages->map(function ($message) use ($authenticatedUserId) {
+            // Check if the sender_id is the same as $authenticatedUserId
+            if ($message->sender_id == $authenticatedUserId) {
+                $message->type = 'sent';
+            }
+            // Check if the recipient_id is the same as $oppositeUserId
+            else {
+                $message->type = 'received';
+            }
+        
+            return $message;
+        });
+
+        return MessageResource::collection($messages);
     }
 
     /**

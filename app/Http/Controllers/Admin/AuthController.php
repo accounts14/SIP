@@ -23,13 +23,13 @@ class AuthController extends Controller
                     'expires_at' => $expired,
                 ]);
                 return response()->json([
-                    'id'        => $user->id,
-                    'name'      => $user->name,
-                    'email'     => $user->email,
-                    'role'      => $user->role,
-                    'school_id' => $user->school_id,
-                    'expired'   => $expired,
-                    'token'     => $token->accessToken
+                    'id' => $user->id,
+                    'uuid' => $user->uuid,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role'  => $user->role,
+                    'expired'  => $expired,
+                    'token' => $token->accessToken
                 ], 200);
             // }
         }
