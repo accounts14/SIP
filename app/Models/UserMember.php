@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,5 +23,14 @@ class UserMember extends Model
     public function student()
     {
         return $this->belongsTo(UserCandidate::class, 'student_id');
+    }
+    
+    protected static function booted(): void
+    {
+        static::addGlobalScope('user', function (Builder $builder) {
+            if (auth()->user()->role == 'member') {
+                $builder->where('user_id', auth()->id());
+            }
+        });
     }
 }
