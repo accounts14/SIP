@@ -19,6 +19,15 @@ class UserResource extends JsonResource
             'school_id' => $this->school_id,
             'name'      => $this->name,
             'role'      => $this->role,
+            'school'    => $this->whenLoaded('school', function() {
+                return [
+                    'name'          => $this->school->name,
+                    'type'          => $this->school->type,
+                    'accreditation' => $this->school->accreditation,
+                    'level'         => $this->school->level,
+                    'npsn'          => $this->school->npsn,
+                ];
+            }),
         ];
     }
 }

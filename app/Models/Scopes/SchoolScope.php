@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class BrandScope implements Scope
+class SchoolScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -18,10 +18,10 @@ class BrandScope implements Scope
     {
         $user = auth()->user();
 
-        if (!$user || $user->role === 'superadmin') {
+        if (!$user->school_id) {
             return;
         }
 
-        $builder->where('brand_id', $user->brand_id);
+        $builder->where('school_id', $user->school_id);
     }
 }
