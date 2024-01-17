@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -76,7 +77,9 @@ class UserController extends Controller
         if ($data['id']) {
             unset($data['id']);
         }
-        $data['password'] = bcrypt($data['provinsi']);
+        $data['uuid'] = Str::uuid();
+        $data['password'] = bcrypt($data['password']);
+        $data['school_id'] = auth()->user()->school_id;
         return response()->json([
             'data'  => User::create($data),
             'msg'   =>'Data Admin berhasil ditambah.',
@@ -97,9 +100,12 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         $data = $request->all();
-        if ($data['password']) {
-            $data['password'] = bcrypt($data['provinsi']);
+        if (isset($data['password']) && $data['password'] != '') {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
         }
+        $data['school_id'] = auth()->user()->school_id;
         if (User::where('id', $user->id)->update($data)) {
             return response()->json(['msg' =>'Data Admin berhasil diubah.'], 200);
         } else {
