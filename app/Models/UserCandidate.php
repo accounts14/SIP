@@ -64,4 +64,8 @@ class UserCandidate extends Model
     public function registration() {
         return $this->hasMany(StudentRegistration::class, 'student_id');
     }
+    
+    public function member() {
+        return $this->hasMany(UserMember::class, 'student_id');
+    }
 }

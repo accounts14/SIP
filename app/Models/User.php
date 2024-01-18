@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\Scopes\BrandScope;
+use App\Models\Scopes\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -21,6 +21,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'name',
         'email',
         'password',
@@ -57,14 +58,18 @@ class User extends Authenticatable
         return $this->morphMany(Message::class, 'recipient');
     }
 
-    public function brand()
+    public function school()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(School::class, 'school_id');
+    }
+    
+    public function member() {
+        return $this->hasMany(UserMember::class, 'user_id');
     }
 
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new BrandScope);
+        static::addGlobalScope(new SchoolScope);
     }
 }

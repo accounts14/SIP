@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\RegistrationFormController;
 use App\Http\Controllers\Api\StudentRegistrationController;
 use App\Http\Controllers\Api\UserCandidateController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserMemberController;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,13 +33,14 @@ use Illuminate\Support\Facades\Auth;
 
 Route::post('register', RegisterController::class);
 
+Route::get('me', function() {
+    return ['user' => new UserResource(Auth::user())];
+});
+
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('me', function() {
-        return ['user' => new UserResource(Auth::user())];
-    });
     // Web 
     Route::get('products', 'WebProductController@index');
     // location
@@ -55,6 +58,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         Route::post('/', [SchoolController::class, 'store']);
         Route::put('/{id}', [SchoolController::class, 'update']);
         Route::delete('/{id}', [SchoolController::class, 'destroy']);
+        Route::put('/generate-user/{id}', [SchoolController::class, 'genUser']);
     });
     Route::get('get-nearest-schools', [SchoolController::class, 'getNearestSchools']);
     Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
@@ -75,4 +79,6 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('school-levels', SchoolLevelConroller::class);
     Route::apiResource('messages', ChatController::class);
 
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('user-member', UserMemberController::class);
 });

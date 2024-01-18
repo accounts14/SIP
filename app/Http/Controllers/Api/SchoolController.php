@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
 use App\Models\School;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -65,7 +66,13 @@ class SchoolController extends Controller
         $validated          = $request->validated();
         $validated['slug']  = Str::slug($validated['name']);
         $school             = School::create($validated);
-        return new SchoolResource($school);
+        $genUser = $this->genUser($school->id, $school);
+        // return new SchoolResource($school);
+        return response()->json([
+            'data'  => new SchoolResource($school),
+            'login' => $genUser,
+            'msg'   => 'Data Sekolah berhasil dibuat',
+        ], 200);
     }
 
     public function update(SchoolRequest $request, School $id) {
@@ -134,5 +141,40 @@ class SchoolController extends Controller
         }
 
         return SchoolResource::collection($filteredSchools->get());
+    }
+
+    public function genUser($id, $sch = null) {
+        $count = User::where('school_id', $id)->count();
+        if (!$count) {
+            if ($sch == null) {
+                $dsch = School::where('id', $id)->first();
+            } else {
+                $dsch = $sch;
+            }
+            $pw = Str::random(8);
+            $email = str_replace('-', '', strtolower($dsch->slug)).'@mail.com';
+            $data = [
+                'uuid'  => Str::uuid(),
+                'school_id' => $id,
+                'name'      => $dsch->name,
+                'email'     => $email,
+                'password'  => bcrypt($pw),
+                'role'      => 'superadmin',
+            ];
+
+            if ($sch) {
+                return ['email' => $email, 'password' => $pw];
+            }
+
+            return response()->json([
+                'data'  => User::create($data),
+                'login' => ['email' => $email, 'password' => $pw],
+                'msg'   => 'Admin Sekolah berhasil dibuat',
+            ], 200);
+        } else {
+            return response()->json([
+                'message'=> 'Admin Sekolah sudah pernah dibuat sebelumnya.!',
+            ], 422);
+        }
     }
 }
