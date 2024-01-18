@@ -33,13 +33,14 @@ use Illuminate\Support\Facades\Auth;
 
 Route::post('register', RegisterController::class);
 
+Route::get('me', function() {
+    return ['user' => new UserResource(Auth::user())];
+});
+
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('me', function() {
-        return ['user' => new UserResource(Auth::user())];
-    });
     // Web 
     Route::get('products', 'WebProductController@index');
     // location
