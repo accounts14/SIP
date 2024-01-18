@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -31,6 +32,7 @@ class RegisterController extends Controller
         //create user
         $user = User::create([
             'name'      => $request->name,
+            'uuid'      =>  Str::uuid(),
             'email'     => $request->email,
             'password'  => bcrypt($request->password),
             'role' => 'member'
