@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\TestimonyController;
 use App\Http\Controllers\Api\RegistrationFormController;
 use App\Http\Controllers\Api\StudentRegistrationController;
 use App\Http\Controllers\Api\UserCandidateController;
+use App\Http\Controllers\Api\TeacherController;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,5 +75,6 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::get('registration-form/sch/{sch_id}', [RegistrationFormController::class, 'fromSchool']);
     Route::apiResource('school-levels', SchoolLevelConroller::class);
     Route::apiResource('messages', ChatController::class);
+    Route::apiResource('teachers', TeacherController::class);
 
 });
