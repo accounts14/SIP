@@ -24,25 +24,8 @@ class SchoolRequest extends FormRequest
         return [
             'name'          => 'required',
             'type'          => 'required',
-            'accrediation'  => 'nullable',
-            'level'         => 'string|required',
-            'established'   => 'nullable',
-            'npsn'          => 'nullable',
-            'headmaster'    => 'nullable',
-            'class'         => 'nullable',
-            'curriculum'    => 'nullable',
-            'student'       => 'nullable',
-            'location'      => 'nullable',
-            'longitude'     => 'nullable',
-            'latitude'      => 'nullable',
-            'link_location' => 'nullable',
-            'telephone'     => 'nullable',
-            'web'           => 'nullable',
-            'motto'         => 'nullable',
-            'content_array' => 'nullable',
-            'school_status' => 'nullable',
-            'avatar'        => 'nullable',
-            'banner'        => 'nullable',
+            'level'         => 'required',
+            'npsn'          => 'required',
         ];
     }
 }

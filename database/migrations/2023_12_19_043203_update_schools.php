@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('level')->nullable()->change();
             $table->enum('accreditation', ['A', 'B', 'C', 'TT'])->nullable()->change();
             $table->text('motto')->nullable()->change();
+            $table->double('longitude')->default(0)->change();
+            $table->double('latitude')->default(0)->change();
             $table->set('school_status', [0,1])->default(1)->change();
 
             $table->foreign('level')->references('id')->on('school_levels');
@@ -37,6 +39,8 @@ return new class extends Migration
             $table->string('accreditation')->nullable()->change();
             $table->string('motto')->nullable()->change();
             $table->string('school_status')->nullable()->change();
+            $table->string('longitude')->nullable()->change();
+            $table->string('latitude')->nullable()->change();
         });
     }
 };

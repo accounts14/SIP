@@ -16,6 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('district_id')->nullable()->after('province_id');
             $table->unsignedBigInteger('city_id')->nullable()->after('district_id');
             $table->unsignedBigInteger('subdistrict_id')->nullable()->after('district_id');
+            $table->enum('is_member', [0,1,2,3,4,5])->default(0)->after('school_status');
+            // 0 = not a member
+            // 1-5 = level member with difference benefit
 
             // probably different engines implemented so cannot create any foreign key
             // $table->foreign('province_id')->references('prov_id')->on('provinces');
@@ -40,6 +43,7 @@ return new class extends Migration
             $table->dropColumn('city_id');
             $table->dropColumn('district_id');
             $table->dropColumn('subdistrict_id');
+            $table->dropColumn('is_member');
         });
     }
 };

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class School extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -30,6 +31,7 @@ class School extends Model
         'motto',
         'content_array',
         'school_status',
+        'is_member',
         'avatar',
         'banner',
         'slug',
@@ -54,6 +56,10 @@ class School extends Model
 
     public function regForm() {
         return $this->hasMany(RegistrationForm::class, 'school_id');
+    }
+
+    public function teachers() {
+        return $this->hasMany(Teacher::class, 'school_id');
     }
     
     public function schoolLevels() :BelongsTo {

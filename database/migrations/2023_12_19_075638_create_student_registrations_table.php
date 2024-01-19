@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('status', ['0','1','2','3','4','9'])->default('0');
             // 0 = menunggu pembayaran, 1 = pendaftaran diproses, 2 = lolos berkas, 3 = tidak lolos, 4 = diterima, 9 = ditolak/batal
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('school_id')->references('id')->on('schools');
             $table->foreign('student_id')->references('id')->on('user_candidates');

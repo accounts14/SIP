@@ -24,6 +24,7 @@ return new class extends Migration
             $table->json('registration_field');
             $table->enum('status', ['0','1'])->default('0'); // 0 = tutup, 1 = buka
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('school_id')->references('id')->on('schools');
         });

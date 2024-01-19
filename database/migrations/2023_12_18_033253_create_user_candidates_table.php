@@ -69,6 +69,7 @@ return new class extends Migration
             $table->double('jarak_rumah_kesekolah')->nullable(); // km
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -23,7 +23,7 @@ class SchoolController extends Controller
         $q = $req->q ?? null;
         $param = '';
 
-        $schools = School::select('*');
+        $schools = School::select('*')->with('schoolLevels');
         if ($q) {
             $schools->where(function($query) use ($q) {
                 $query->where('name', 'like', "%$q%")
@@ -63,9 +63,9 @@ class SchoolController extends Controller
     }
 
     public function store(SchoolRequest $request) {
-        $validated          = $request->validated();
-        $validated['slug']  = Str::slug($validated['name']);
-        $school             = School::create($validated);
+        $data = $request->all();
+        $data['slug']  = Str::slug($data['name']);
+        $school             = School::create($data);
         $genUser = $this->genUser($school->id, $school);
         // return new SchoolResource($school);
         return response()->json([
@@ -76,9 +76,9 @@ class SchoolController extends Controller
     }
 
     public function update(SchoolRequest $request, School $id) {
-        $validated          = $request->validated();
-        $validated['slug']  = Str::slug($validated['name']);
-        foreach($validated as $k => $v) {
+        $data = $request->all();
+        $data['slug']  = Str::slug($data['name']);
+        foreach($data as $k => $v) {
             $id->$k = $v;
         }
         // $school             = School::where('id', $id)->update($validated);
@@ -91,6 +91,7 @@ class SchoolController extends Controller
 
     public function destroy(School $id)
     {
+        // RegistrationForm, StudentRegistration, Testimony, User
         $id->delete();
         return response()->json([
             'data'  => $id,
@@ -161,14 +162,15 @@ class SchoolController extends Controller
                 'password'  => bcrypt($pw),
                 'role'      => 'superadmin',
             ];
-
+            $lg = ['email' => $email, 'password' => $pw];
             if ($sch) {
-                return ['email' => $email, 'password' => $pw];
+                User::create($data);
+                return $lg;
             }
 
             return response()->json([
                 'data'  => User::create($data),
-                'login' => ['email' => $email, 'password' => $pw],
+                'login' => $lg,
                 'msg'   => 'Admin Sekolah berhasil dibuat',
             ], 200);
         } else {
