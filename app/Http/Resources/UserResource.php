@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'uuid'      => $this->uuid,
             'school_id' => $this->school_id,
             'name'      => $this->name,
+            'avatar'    => $this->avatar,
             'email'     => $this->email,
             'role'      => $this->role,
             'school'    => $this->whenLoaded('school', function() {
