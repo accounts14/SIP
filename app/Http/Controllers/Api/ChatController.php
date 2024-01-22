@@ -18,7 +18,7 @@ class ChatController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
         $user = auth()->user();
         $userClass = get_class($user);

@@ -99,7 +99,7 @@ class SchoolController extends Controller
         ], 200);
     }
 
-    public function getNearestSchools(Request $request) {
+    public function getNearestSchoolsByCoord(Request $request) {
         $userLatitude = $request->get('latitude');
         $userLongitude = $request->get('longitude');
 

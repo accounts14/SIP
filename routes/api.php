@@ -60,7 +60,6 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         Route::delete('/{id}', [SchoolController::class, 'destroy']);
         Route::put('/generate-user/{id}', [SchoolController::class, 'genUser']);
     });
-    Route::get('get-nearest-schools', [SchoolController::class, 'getNearestSchools']);
     Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
     Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
     
