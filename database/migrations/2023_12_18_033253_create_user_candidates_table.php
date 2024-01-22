@@ -41,21 +41,21 @@ return new class extends Migration
             $table->string('tahun_lahir_ayah', 5)->nullable();
             $table->string('jenjang_pendidikan_ayah', 50)->nullable();
             $table->string('pekerjaan_ayah', 100)->nullable();
-            $table->double('penghasilan_ayah')->nullable();
+            $table->string('penghasilan_ayah', 50)->nullable();
             // data ibu
             $table->string('nik_ibu', 16)->nullable();
             $table->string('nama_ibu', 200)->nullable();
             $table->string('tahun_lahir_ibu', 5)->nullable();
             $table->string('jenjang_pendidikan_ibu', 50)->nullable();
             $table->string('pekerjaan_ibu', 100)->nullable();
-            $table->double('penghasilan_ibu')->nullable();
+            $table->string('penghasilan_ibu', 50)->nullable();
             // data wali
             $table->string('nik_wali', 16)->nullable();
             $table->string('nama_wali', 200)->nullable();
             $table->string('tahun_lahir_wali', 5)->nullable();
             $table->string('jenjang_pendidikan_wali', 50)->nullable();
             $table->string('pekerjaan_wali', 100)->nullable();
-            $table->double('penghasilan_wali')->nullable();
+            $table->string('penghasilan_wali', 50)->nullable();
             
             $table->string('kebutuhan_khusus', 100)->nullable();
             $table->string('sekolah_asal', 150)->nullable();

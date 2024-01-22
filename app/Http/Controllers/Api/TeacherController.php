@@ -67,6 +67,8 @@ class TeacherController extends Controller
         if ($data['id']) {
             unset($data['id']);
         }
+        $data['jurusan'] = json_encode($data['jurusan']);
+        $data['keahlian'] = json_encode($data['keahlian']);
         return response()->json([
             'data'  => Teacher::create($data),
             'msg'   =>'Data Guru berhasil ditambah.',
@@ -87,6 +89,8 @@ class TeacherController extends Controller
     public function update(TeacherRequest $request, Teacher $teacher)
     {
         $data = $request->all();
+        $data['jurusan'] = json_encode($data['jurusan']);
+        $data['keahlian'] = json_encode($data['keahlian']);
         if (Teacher::where('id', $teacher->id)->update($data)) {
             return response()->json(['msg' =>'Data Guru berhasil diubah.'], 200);
         } else {
