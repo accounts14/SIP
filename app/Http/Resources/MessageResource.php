@@ -21,7 +21,7 @@ class MessageResource extends JsonResource
             'sender'  => $this->whenLoaded('sender', function() {
                 return [
                     'uuid'  => $this->sender->uuid,
-                    'username'  => $this->sender->username,
+                    'name'  => $this->sender->name,
                 ];
             }),
             'created_at'    => $this->created_at,

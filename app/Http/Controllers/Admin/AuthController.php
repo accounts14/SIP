@@ -17,22 +17,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            // if ($user->role == $role && $role == 'superadmin' || $role != 'superadmin' && $user->role != 'superadmin') {
-                $expired = Carbon::now()->addHours(1);
-                $token = $user->createToken('access_token', ['*'], [
-                    'expires_at' => $expired,
-                ]);
-                return response()->json([
-                    'id' => $user->id,
-                    'uuid' => $user->uuid,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'school_id' => $user->school_id,
-                    'role'  => $user->role,
-                    'expired'  => $expired,
-                    'token' => $token->accessToken
-                ], 200);
-            // }
+            $expired = Carbon::now()->addHours(1);
+            $token = $user->createToken('access_token', ['*'], [
+                'expires_at' => $expired,
+            ]);
+            return response()->json([
+                'id' => $user->id,
+                'uuid' => $user->uuid,
+                'name' => $user->name,
+                'email' => $user->email,
+                'school_id' => $user->school_id,
+                'role'  => $user->role,
+                'expired'  => $expired,
+                'token' => $token->accessToken
+            ], 200);
         }
         return response()->json(['error' => 'Unauthorized'], 401);
     }
