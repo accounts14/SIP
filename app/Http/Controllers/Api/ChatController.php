@@ -9,7 +9,6 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 
 class ChatController extends Controller
@@ -57,13 +56,12 @@ class ChatController extends Controller
 
         ]);
 
-        // $message->type = 'received';
         $message->load('sender');
         $broadcastedMessage = new MessageResource($message);
 
         broadcast(new MessageEvent($sender, $recipient, $broadcastedMessage))->toOthers();
 
-        return ['status' => 'Message Sent!'];
+        return ['status' => 'Message Sent!', 'message' => $broadcastedMessage];
     }
 
     /** 
