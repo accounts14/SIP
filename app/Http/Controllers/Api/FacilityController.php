@@ -12,9 +12,14 @@ class FacilityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FacilityRequest $request)
     {
-        return response()->json(['data' => FacilityResource::collection(Facility::all())]);
+        $q = $request->q ?? null;
+        $data = Facility::select("*");
+        if ($q) {
+            $data->where('description', 'like', "%$q%");
+        }
+        return response()->json(['data' => FacilityResource::collection($data->all())]);
     }
 
     /**

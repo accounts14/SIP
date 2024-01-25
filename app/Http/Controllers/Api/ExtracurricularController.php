@@ -12,10 +12,18 @@ class ExtracurricularController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(ExtracurricularRequest $request)
     {
-        $data = Extracurricular::with('school')->all();
-        return response()->json(['data' => ExtracurricularResource::collection($data)]);
+        $q = $request->q ?? null;
+        $data = Extracurricular::with('school');
+        if ($q) {
+            $data->where(function($query) use ($q) {
+                $query->where('name', 'like', "%$q%")
+                    ->orWhere('description', 'like', "%$q%")
+                    ->orWhere('instructors', 'like', "%$q%");
+            });
+        }
+        return response()->json(['data' => ExtracurricularResource::collection($data->all())]);
     }
 
     /**

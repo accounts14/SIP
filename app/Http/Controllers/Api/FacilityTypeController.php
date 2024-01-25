@@ -11,9 +11,17 @@ class FacilityTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FacilityTypeRequest $request)
     {
-        return response()->json(['data' => FacilityType::all()]);
+        $q = $request->q ?? null;
+        $data = FacilityType::select("*");
+        if ($q) {
+            $data->where(function($query) use ($q) {
+                $query->where('name', 'like', "%$q%")
+                    ->orWhere('description', 'like', "%$q%");
+            });
+        }
+        return response()->json(['data' => $data->all()]);
     }
 
     /**
