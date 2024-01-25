@@ -13,7 +13,7 @@ class FacilityTypeController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['data' => FacilityType::all()]);
     }
 
     /**
@@ -21,7 +21,14 @@ class FacilityTypeController extends Controller
      */
     public function store(FacilityTypeRequest $request)
     {
-        //
+        $data = $request->all();
+        if ($data['id']) {
+            unset($data['id']);
+        }
+        return response()->json([
+            'data'  => FacilityType::create($data),
+            'msg'   =>'Data jenis fasilitas berhasil ditambah.',
+        ], 200);
     }
 
     /**
@@ -29,7 +36,7 @@ class FacilityTypeController extends Controller
      */
     public function show(FacilityType $facilityType)
     {
-        //
+        return response()->json(['data' => $facilityType], 200);
     }
 
     /**
@@ -37,7 +44,15 @@ class FacilityTypeController extends Controller
      */
     public function update(FacilityTypeRequest $request, FacilityType $facilityType)
     {
-        //
+        $data = $request->all();
+        foreach($data as $k => $v) {
+            $facilityType->$k = $v;
+        }
+        $facilityType->save();
+        return response()->json([
+            'data'  => $facilityType,
+            'msg'   => 'Data jenis fasilitas berhasil diubah',
+        ], 200);
     }
 
     /**
@@ -45,6 +60,10 @@ class FacilityTypeController extends Controller
      */
     public function destroy(FacilityType $facilityType)
     {
-        //
+        $facilityType->delete();
+        return response()->json([
+            'data'  => $facilityType,
+            'msg'   => 'Data jenis fasilitas berhasil dihapus',
+        ], 200);
     }
 }

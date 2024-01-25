@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('telephone')->nullable();
             $table->string('web')->nullable();
             $table->string('motto')->nullable();
-            $table->string('content_array')->nullable();
+            // $table->string('content_array')->nullable();
             $table->string('school_status')->nullable();
             $table->string('avatar')->nullable();
             $table->string('banner')->nullable();

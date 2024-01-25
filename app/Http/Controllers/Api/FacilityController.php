@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Facility;
 use App\Http\Requests\FacilityRequest;
+use App\Http\Resources\FacilityResource;
 
 class FacilityController extends Controller
 {
@@ -12,7 +14,7 @@ class FacilityController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['data' => FacilityResource::collection(Facility::all())]);
     }
 
     /**
@@ -20,7 +22,14 @@ class FacilityController extends Controller
      */
     public function store(FacilityRequest $request)
     {
-        //
+        $data = $request->all();
+        if ($data['id']) {
+            unset($data['id']);
+        }
+        return response()->json([
+            'data' => new FacilityResource(Facility::create($data)),
+            'msg'  =>'Data fasilitas berhasil ditambah.',
+        ], 200);
     }
 
     /**
@@ -28,7 +37,7 @@ class FacilityController extends Controller
      */
     public function show(Facility $facility)
     {
-        //
+        return response()->json(['data' => new FacilityResource($facility->with(['images']))], 200);
     }
 
     /**
@@ -36,7 +45,15 @@ class FacilityController extends Controller
      */
     public function update(FacilityRequest $request, Facility $facility)
     {
-        //
+        $data = $request->all();
+        foreach($data as $k => $v) {
+            $facility->$k = $v;
+        }
+        $facility->save();
+        return response()->json([
+            'data' => new FacilityResource($facility),
+            'msg'  => 'Data fasilitas berhasil diubah',
+        ], 200);
     }
 
     /**
@@ -44,6 +61,10 @@ class FacilityController extends Controller
      */
     public function destroy(Facility $facility)
     {
-        //
+        $facility->delete();
+        return response()->json([
+            'data' => new FacilityResource($facility),
+            'msg'  => 'Data fasilitas berhasil dihapus',
+        ], 200);
     }
 }

@@ -31,6 +31,8 @@ class GalleryRequest extends FormRequest
         if ($this->isMethod('get')) {
 			return [];
 		}
-        return [];
+        return [
+            'file' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
+        ];
     }
 }
