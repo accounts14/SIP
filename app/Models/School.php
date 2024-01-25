@@ -54,6 +54,14 @@ class School extends Model
         return $this->hasMany(StudentRegistration::class, 'school_id');
     }
 
+    public function facilities() {
+        return $this->hasMany(Facility::class, 'school_id');
+    }
+
+    public function extracurriculars() {
+        return $this->hasMany(Extracurricular::class, 'school_id');
+    }
+
     public function regForm() {
         return $this->hasMany(RegistrationForm::class, 'school_id');
     }
