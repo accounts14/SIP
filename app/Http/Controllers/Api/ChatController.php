@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Events\MessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
-use App\Models\AnonymousUser;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -46,25 +45,8 @@ class ChatController extends Controller
     {
         $senderUuid = $request->sender_uuid;
         $recipientUuid = $request->recipient_uuid;
-        // if anonymous user is sending
-        if($request->sender_type === 'anonymous_user') {
-            // if no records found for this anonymous user, create it first
-            if(!$senderUuid) {
-                $sender = AnonymousUser::create([
-                    'uuid'      =>  Str::uuid(),
-                    'username'  =>  'anonymous-user-' . rand(000000, 999999),
-                ]);
-            }
-            else {
-                $sender = AnonymousUser::where('uuid', $senderUuid)->first();
-            }
-            $recipient = User::where('uuid', $recipientUuid)->first();
-        }
-        // if admin is sending messages
-        else {
-            $sender = User::where('uuid', $senderUuid)->first();
-            $recipient = AnonymousUser::where('uuid', $recipientUuid)->first();
-        }
+        $sender = User::where('uuid', $senderUuid)->first();
+        $recipient = User::where('uuid', $recipientUuid)->first();
 
         $message = Message::create([
             'content'       => $request->message,
@@ -75,7 +57,7 @@ class ChatController extends Controller
 
         ]);
 
-        $message->type = 'received';
+        // $message->type = 'received';
         $message->load('sender');
         $broadcastedMessage = new MessageResource($message);
 
@@ -90,7 +72,7 @@ class ChatController extends Controller
     public function show(string $uuid)
     {
         $authenticatedUserId = auth()->user()->id;
-        $oppositeUserId = AnonymousUser::where('uuid', $uuid)->first()->id;
+        $oppositeUserId = User::where('uuid', $uuid)->first()->id;
 
         $messages = Message::where('recipient_id', $authenticatedUserId)
             ->where('sender_id', $oppositeUserId)
