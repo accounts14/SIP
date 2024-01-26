@@ -23,7 +23,7 @@ class ExtracurricularController extends Controller
                     ->orWhere('instructors', 'like', "%$q%");
             });
         }
-        return response()->json(['data' => ExtracurricularResource::collection($data->all())]);
+        return response()->json(['data' => ExtracurricularResource::collection($data->get())]);
     }
 
     /**

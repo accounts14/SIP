@@ -21,7 +21,7 @@ class FacilityTypeController extends Controller
                     ->orWhere('description', 'like', "%$q%");
             });
         }
-        return response()->json(['data' => $data->all()]);
+        return response()->json(['data' => $data->get()]);
     }
 
     /**

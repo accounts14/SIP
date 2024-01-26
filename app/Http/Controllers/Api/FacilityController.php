@@ -19,7 +19,7 @@ class FacilityController extends Controller
         if ($q) {
             $data->where('description', 'like', "%$q%");
         }
-        return response()->json(['data' => FacilityResource::collection($data->all())]);
+        return response()->json(['data' => FacilityResource::collection($data->get())]);
     }
 
     /**
