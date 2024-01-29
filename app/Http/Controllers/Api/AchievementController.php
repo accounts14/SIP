@@ -24,7 +24,7 @@ class AchievementController extends Controller
         $q = $req->q ?? null;
         $param = '';
 
-        $data = Achievement::select('*')->with('school');
+        $data = Achievement::with('school');
         if ($q) {
             $data->where(function($query) use ($q) {
                 $query->where('name', 'like', "%$q%")
@@ -48,9 +48,9 @@ class AchievementController extends Controller
             }
         }
 
-        $data->offset($ofs)->limit($limit)->orderBy($order, $ordtp)->get();
+        $data->offset($ofs)->limit($limit)->orderBy($order, $ordtp);
         return response()->json([
-            'data'  => AchievementResource::collection($data),
+            'data'  => AchievementResource::collection($data->get()),
             'count' => $count,
             'limit' => $limit,
             'nextPageUrl' => $nextPageUrl.$param,

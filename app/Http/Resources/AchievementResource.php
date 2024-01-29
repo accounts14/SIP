@@ -22,13 +22,14 @@ class AchievementResource extends JsonResource
             'achieved_at'   => $this->achieved_at,
             'achieved_by'   => $this->achieved_by,
             'level'         => $this->level,
-            'school'           => $this->whenLoaded('school', function() {
+            'school_id'     => $this->school_id,
+            'school'        => $this->whenLoaded('school', function() {
                 return [
-                    'name'          => $this->schools->name,
-                    'type'          => $this->schools->type,
-                    'accreditation' => $this->schools->accreditation,
-                    'level'         => $this->schools->level,
-                    'npsn'          => $this->schools->npsn,
+                    'name'          => $this->school->name,
+                    'type'          => $this->school->type,
+                    'accreditation' => $this->school->accreditation,
+                    'level'         => $this->school->level,
+                    'npsn'          => $this->school->npsn,
                 ];
             }),
         ];
