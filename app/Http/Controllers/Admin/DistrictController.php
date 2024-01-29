@@ -15,7 +15,7 @@ class DistrictController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->get('limit', 25);
+        $limit = $request->get('limit', null);
         $districts = District::with('subdistricts');
         if ($request->q) {
             $districts->where('dis_name', 'like', "%$request->q%");

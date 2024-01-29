@@ -15,7 +15,7 @@ class ProvinceController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->get('limit', 25);
+        $limit = $request->get('limit', null);
         $provinces = Province::with('cities');
         if ($request->q) {
             $provinces->where('prov_name', 'like', "%$request->q%");

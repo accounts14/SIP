@@ -15,7 +15,7 @@ class SubdistrictController extends Controller
      */
     public function index(Request $request)
     {
-        $limit = $request->get('limit', 25);
+        $limit = $request->get('limit', null);
         $subdistrict = SubDistrict::with('district', 'schools');
         if ($request->q) {
             $subdistrict->where('subdis_name', 'like', "%$request->q%");
