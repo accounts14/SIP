@@ -20,13 +20,14 @@ class ExtracurricularResource extends JsonResource
             'description'      => $this->description,
             'instructors'      => $this->instructors,
             'number_of_members'=> $this->number_of_members,
+            'school_id'        => $this->school_id,
             'school'           => $this->whenLoaded('school', function() {
                 return [
-                    'name'          => $this->schools->name,
-                    'type'          => $this->schools->type,
-                    'accreditation' => $this->schools->accreditation,
-                    'level'         => $this->schools->level,
-                    'npsn'          => $this->schools->npsn,
+                    'name'          => $this->school->name,
+                    'type'          => $this->school->type,
+                    'accreditation' => $this->school->accreditation,
+                    'level'         => $this->school->level,
+                    'npsn'          => $this->school->npsn,
                 ];
             }),
         ];
