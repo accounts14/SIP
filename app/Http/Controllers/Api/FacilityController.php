@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Facility;
 use App\Http\Requests\FacilityRequest;
 use App\Http\Resources\FacilityResource;
+use App\Models\Gallery;
 
 class FacilityController extends Controller
 {
@@ -15,7 +16,7 @@ class FacilityController extends Controller
     public function index(FacilityRequest $request)
     {
         $q = $request->q ?? null;
-        $data = Facility::select("*");
+        $data = Facility::with(['school']);
         if ($q) {
             $data->where('description', 'like', "%$q%");
         }
@@ -27,12 +28,31 @@ class FacilityController extends Controller
      */
     public function store(FacilityRequest $request)
     {
-        $data = $request->all();
-        if ($data['id']) {
-            unset($data['id']);
+        $data = [
+            'school_id'   => $request->school_id,
+            'type_id'     => $request->type_id,
+            'description' => $request->description,
+            'condition'   => $request->condition,
+        ];
+        $facility = Facility::create($data);
+
+        if ($request->hasFile('files')) {
+            $files = $request->file('files');
+            foreach ($files as $file) {
+                $fileName = "F-".time()."_".$file->getClientOriginalName();
+                $file->move('facilities', $fileName);
+                $data[] = [
+                    'imageable_type' => 'App\Models\Facility',
+                    'imageable_id'=> $facility->id,
+                    'caption'     => 'Image of '.$fileName,
+                    'description' => 'Description of '.$fileName,
+                    'path'        => 'facilities/'.$fileName
+                ];
+            }
+            Gallery::insert($data);
         }
         return response()->json([
-            'data' => new FacilityResource(Facility::create($data)),
+            'data' => new FacilityResource($facility),
             'msg'  =>'Data fasilitas berhasil ditambah.',
         ], 200);
     }
@@ -42,7 +62,9 @@ class FacilityController extends Controller
      */
     public function show(Facility $facility)
     {
-        return response()->json(['data' => new FacilityResource($facility->with(['images']))], 200);
+        return response()->json([
+            'data' => new FacilityResource($facility->with('images')->first())
+        ], 200);
     }
 
     /**

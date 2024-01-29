@@ -16,24 +16,22 @@ class FacilityResource extends JsonResource
     {
         return [
             'id'          => $this->id,
+            'type_id'     => $this->type_id,
             'name'        => $this->type->name,
             'description' => $this->description,
             'condition'   => $this->condition,
+            'school_id'   => $this->school_id,
             'school'      => $this->whenLoaded('school', function() {
                 return [
-                    'name'          => $this->schools->name,
-                    'type'          => $this->schools->type,
-                    'accreditation' => $this->schools->accreditation,
-                    'level'         => $this->schools->level,
-                    'npsn'          => $this->schools->npsn,
+                    'name'          => $this->school->name,
+                    'type'          => $this->school->type,
+                    'accreditation' => $this->school->accreditation,
+                    'level'         => $this->school->level,
+                    'npsn'          => $this->school->npsn,
                 ];
             }),
             'images'      => $this->whenLoaded('images', function() {
-                return [
-                    'caption'        => $this->images->caption,
-                    'description'    => $this->images->description,
-                    'path'           => $this->images->path,
-                ];
+                return $this->images;
             }),
         ];
     }

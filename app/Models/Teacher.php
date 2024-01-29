@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,5 +32,11 @@ class Teacher extends Model
     
     public function school() :BelongsTo {
         return $this->belongsTo(School::class, 'school_id');
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new SchoolScope);
     }
 }

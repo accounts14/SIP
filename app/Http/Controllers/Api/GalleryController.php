@@ -21,23 +21,19 @@ class GalleryController extends Controller
      */
     public function store(GalleryRequest $request)
     {
-        $data = [
-            'caption'     => $request->caption ?? '',
-            'description' => $request->description ?? '',
-        ];
-        $file = $request->file('file');
-        if ($file->getClientOriginalName()) {
+        $data = [];
+        $files = $request->file('files');
+        foreach ($files as $file) {
             $fileName = "G-".time()."_".$file->getClientOriginalName();
             $file->move('galleries', $fileName);
-            $data['path'] = 'galleries/'.$fileName;
-            // unlink('galleries/'.$setting->value);
-        } else {
-            return response()->json(['msg'  =>'Tidak ada file untuk disimpan.!'], 422);
+            $data[] = [
+                'caption'     => $request->caption ?? '',
+                'description' => $request->description ?? '',
+                'path'        => 'galleries/'.$fileName
+            ];
         }
-        return response()->json([
-            'data' => Gallery::create($data),
-            'msg'  =>'Gambar berhasil ditambah.',
-        ], 200);
+        Gallery::insert($data);
+        return response()->json(['msg'  =>'Gambar berhasil ditambah.'], 200);
     }
 
     /**
@@ -53,15 +49,6 @@ class GalleryController extends Controller
      */
     public function update(GalleryRequest $request, Gallery $gallery)
     {
-        $file = $request->file('file');
-        if ($file->getClientOriginalName()) {
-            $fileName = "G-".time()."_".$file->getClientOriginalName();
-            $file->move('galleries', $fileName);
-            unlink($gallery->path);
-            $gallery->path = 'galleries/'.$fileName;
-        } else {
-            return response()->json(['msg'  =>'Tidak ada file untuk disimpan.!'], 422);
-        }
         if (isset($request->caption)) {
             $gallery->caption = $request->caption;
         }

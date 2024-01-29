@@ -28,11 +28,11 @@ class GalleryRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->isMethod('get')) {
+        if ($this->isMethod('get') or $this->isMethod('put')) {
 			return [];
 		}
         return [
-            'file' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
+            'files' => 'required|file|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
 }
