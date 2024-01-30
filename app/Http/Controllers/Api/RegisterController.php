@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -40,6 +42,23 @@ class RegisterController extends Controller
 
         //return response JSON user is created
         if($user) {
+            if (Auth::attempt(['email' => $user->email, 'password' => $request->password])) {
+                $user = Auth::user();
+                $expired = Carbon::now()->addHours(1);
+                $token = $user->createToken('access_token', ['*'], [
+                    'expires_at' => $expired,
+                ]);
+                return response()->json([
+                    'id' => $user->id,
+                    'uuid' => $user->uuid,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'school_id' => $user->school_id,
+                    'role'  => $user->role,
+                    'expired'  => $expired,
+                    'token' => $token->accessToken
+                ], 200);
+            }
             return response()->json([
                 'success' => true,
                 'user'    => $user,  
