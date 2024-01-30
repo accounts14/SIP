@@ -23,7 +23,10 @@ class SubdistrictController extends Controller
         if ($request->kec) {
             $subdistrict->where('dis_id', $request->kec);
         }
-        return SubdistrictResource::collection($subdistrict->paginate($limit));
+        if ($limit) {
+            return SubdistrictResource::collection($subdistrict->paginate($limit));
+        }
+        return SubdistrictResource::collection($subdistrict->get());
     }
 
     /**

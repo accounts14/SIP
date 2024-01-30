@@ -20,7 +20,10 @@ class ProvinceController extends Controller
         if ($request->q) {
             $provinces->where('prov_name', 'like', "%$request->q%");
         }
-        return ProvinceResource::collection($provinces->paginate($limit));
+        if ($limit) {
+            return ProvinceResource::collection($provinces->paginate($limit));
+        }
+        return ProvinceResource::collection($provinces->get());
     }
 
     /**

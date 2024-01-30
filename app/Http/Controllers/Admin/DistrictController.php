@@ -23,7 +23,10 @@ class DistrictController extends Controller
         if ($request->kab) {
             $districts->where('city_id', $request->kab);
         }
-        return DistrictResource::collection($districts->paginate($limit));
+        if ($limit) {
+            return DistrictResource::collection($districts->paginate($limit));
+        }
+        return DistrictResource::collection($districts->get());
     }
 
     /**

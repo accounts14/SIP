@@ -23,7 +23,10 @@ class CityController extends Controller
         if ($request->prov) {
             $cities->where('prov_id', $request->prov);
         }
-        return CityResource::collection($cities->paginate($limit));
+        if ($limit) {
+            return CityResource::collection($cities->paginate($limit));
+        }
+        return CityResource::collection($cities->get());
     }
 
     /**
