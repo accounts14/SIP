@@ -39,17 +39,18 @@ class FacilityController extends Controller
         if ($request->hasFile('files')) {
             $files = $request->file('files');
             foreach ($files as $file) {
-                $fileName = "F-".time()."_".$file->getClientOriginalName();
-                $file->move('facilities', $fileName);
-                $data[] = [
+                $fileName = "F-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+                $path = $file->move('storage/facilities', $fileName);
+                $img[] = [
                     'imageable_type' => 'App\Models\Facility',
                     'imageable_id'=> $facility->id,
                     'caption'     => 'Image of '.$fileName,
                     'description' => 'Description of '.$fileName,
-                    'path'        => 'facilities/'.$fileName
+                    'path'        => $path,
+                    'school_id'   => $request->school_id,
                 ];
             }
-            Gallery::insert($data);
+            Gallery::insert($img);
         }
         return response()->json([
             'data' => new FacilityResource($facility),
