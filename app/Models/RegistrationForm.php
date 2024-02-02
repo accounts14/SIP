@@ -24,6 +24,10 @@ class RegistrationForm extends Model
         'status',
     ];
     
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function registration()
     {
         return $this->hasMany(StudentRegistration::class, 'registration_form_id');

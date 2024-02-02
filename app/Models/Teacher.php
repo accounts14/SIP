@@ -30,6 +30,10 @@ class Teacher extends Model
         'school_id',
     ];
     
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function school() :BelongsTo {
         return $this->belongsTo(School::class, 'school_id');
     }

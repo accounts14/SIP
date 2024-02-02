@@ -40,11 +40,22 @@ class SchoolResource extends JsonResource
             'slug'          => $this->slug,
             'province_id'   => $this->province_id,
             'province'      => $this->province,
+            'city_id'       => $this->city_id,
+            'city'          => $this->city,
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);
             }),
-            'school_levels'  => $this->whenLoaded('schoolLevels', function() {
+            'school_levels' => $this->whenLoaded('schoolLevels', function() {
                 return $this->schoolLevels;
+            }),
+            'facilities'    => $this->whenLoaded('facilities', function() {
+                return $this->facilities;
+            }),
+            'extracurriculars'=> $this->whenLoaded('extracurriculars', function() {
+                return $this->extracurriculars;
+            }),
+            'achievements'  => $this->whenLoaded('achievements', function() {
+                return $this->achievements;
             }),
         ];
     }

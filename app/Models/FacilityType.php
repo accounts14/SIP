@@ -12,6 +12,10 @@ class FacilityType extends Model
 
     protected $fillable =['name', 'description', 'value'];
 
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function facilities() {
         return $this->hasMany(Facility::class, 'type_id');
     }

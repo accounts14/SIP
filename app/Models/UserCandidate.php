@@ -62,6 +62,10 @@ class UserCandidate extends Model
         'jarak_rumah_kesekolah',
     ];
     
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function registration() {
         return $this->hasMany(StudentRegistration::class, 'student_id');
     }

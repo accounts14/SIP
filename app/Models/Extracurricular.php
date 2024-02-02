@@ -19,6 +19,10 @@ class Extracurricular extends Model
         'school_id',
     ];
 
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function school()
     {
         return $this->belongsTo(School::class, 'school_id');

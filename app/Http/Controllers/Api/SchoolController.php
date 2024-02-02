@@ -18,8 +18,8 @@ class SchoolController extends Controller
         $page  = $req->page ?? 1;
         $limit = $req->limit ?? 10;
         $ofs   = ($page - 1) * $limit;
-        $order = $req->order ?? 'id';
-        $ordtp = $req->orderType ?? 'asc';
+        $order = $req->order ?? 'is_member';
+        $ordtp = $req->orderType ?? 'desc';
         $q = $req->q ?? null;
         $param = '';
 
@@ -33,9 +33,29 @@ class SchoolController extends Controller
             });
             $param .= '&q='.$q;
         }
+        if ($req->has('level')) {
+            $schools->where('level', $req->level);
+            $param .= '&level='.$req->level;
+        }
+        if ($req->has('prov')) {
+            $schools->where('province_id', $req->prov);
+            $param .= '&prov='.$req->prov;
+        }
+        if ($req->has('kab')) {
+            $schools->where('city_id', $req->kab);
+            $param .= '&kab='.$req->kab;
+        }
+        if ($req->has('kec')) {
+            $schools->where('district_id', $req->kec);
+            $param .= '&kec='.$req->kec;
+        }
+        if ($req->has('kel')) {
+            $schools->where('subdistrict_id', $req->kel);
+            $param .= '&kel='.$req->kel;
+        }
         $count = $schools->count();
         $nextPageUrl = null;
-        if ($count >= $limit * $page) {
+        if ($count > $limit * $page) {
             $nextPageUrl = preg_replace('/\?.*/i', '', $req->fullUrl()) . '?page=' . ((int)$page + 1);
             if (isset($req->limit)) {
                 $param .= '&limit='.$limit;
@@ -48,17 +68,24 @@ class SchoolController extends Controller
             }
         }
 
+        $schools->offset($ofs)->limit($limit)->orderBy($order, $ordtp);
         return response()->json([
-            'data'  => SchoolResource::collection($schools->offset($ofs)->limit($limit)->orderBy($order, $ordtp)->get()),
+            'data'  => SchoolResource::collection($schools->get()),
             'count' => $count,
             'limit' => $limit,
-            'nextPageUrl' => $nextPageUrl.$param,
+            'nextPageUrl' => $nextPageUrl ? $nextPageUrl.$param : null,
         ], 200);
     }
 
     public function show($identifier)
     {
-        $school = School::with('testimonies', 'schoolLevels')->findByIdOrSlug($identifier);
+        $school = School::with([
+            'testimonies',
+            'schoolLevels',
+            'facilities',
+            'extracurriculars',
+            'achievements',
+        ])->withCount('teachers')->findByIdOrSlug($identifier);
         return new SchoolResource($school);
     }
 

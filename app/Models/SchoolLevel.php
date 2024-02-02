@@ -13,6 +13,8 @@ class SchoolLevel extends Model
 
     protected $fillable = ['name', 'prefix'];
 
+    protected $hidden = ['deleted_at'];
+
     public function schools() :HasMany {
         return $this->HasMany(School::class, 'level', 'id');
     }

@@ -23,6 +23,10 @@ class School extends Model
         'curriculum',
         'student',
         'location',
+        'province_id',
+        'city_id',
+        'district_id',
+        'subdistrict_id',
         'longitude',
         'latitude',
         'link_location',
@@ -35,6 +39,10 @@ class School extends Model
         'avatar',
         'banner',
         'slug',
+    ];
+
+    protected $hidden = [
+        'deleted_at',
     ];
 
     public function scopeFindByIdOrSlug($query, $param)
@@ -62,6 +70,10 @@ class School extends Model
         return $this->hasMany(Extracurricular::class, 'school_id');
     }
 
+    public function achievements() {
+        return $this->hasMany(Achievement::class, 'school_id');
+    }
+
     public function regForm() {
         return $this->hasMany(RegistrationForm::class, 'school_id');
     }
@@ -76,5 +88,9 @@ class School extends Model
 
     public function province() :BelongsTo {
         return $this->belongsTo(Province::class, 'province_id', 'prov_id');
+    }
+
+    public function city() :BelongsTo {
+        return $this->belongsTo(City::class, 'city_id', 'city_id');
     }
 }

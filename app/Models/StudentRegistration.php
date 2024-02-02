@@ -20,6 +20,10 @@ class StudentRegistration extends Model
         'status',
     ];
     
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function school()
     {
         return $this->belongsTo(School::class, 'school_id');

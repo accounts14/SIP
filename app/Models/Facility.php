@@ -13,6 +13,10 @@ class Facility extends Model
 
     protected $fillable = ['school_id', 'type_id', 'description', 'condition'];
 
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     public function type()
     {
         return $this->belongsTo(FacilityType::class, 'type_id');
