@@ -14,8 +14,12 @@ class SchoolLevelConroller extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
+        if ($req->has('recommendation')) {
+            $data = SchoolLevel::with('schools');
+            return response()->json(['data'  => SchoolLevelResource::collection($data->get())], 200);
+        }
         $schoolLevels = SchoolLevel::all();
         return SchoolLevelResource::collection($schoolLevels);
     }

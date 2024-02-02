@@ -58,6 +58,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
 
     Route::prefix('schools')->group(function() {
         Route::get('/', [SchoolController::class, 'index']);
+        // Route::get('/recommendation/others', [SchoolController::class, 'otherRecommendation']);
         Route::get('/{identifier}', [SchoolController::class, 'show'])
             ->where('identifier', '[0-9]+|[a-z0-9-]+');
         Route::post('/', [SchoolController::class, 'store']);

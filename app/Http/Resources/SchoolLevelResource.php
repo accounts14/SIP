@@ -19,7 +19,13 @@ class SchoolLevelResource extends JsonResource
             'name' => $this->name,
             'prefix' => $this->prefix,
             'schools' => $this->whenLoaded('schools', function() {
-                return SchoolResource::collection($this->schools);
+                return SchoolResource::collection(
+                    $this->schools()
+                        ->where('is_member', '!=', '0')
+                        ->orderBy('is_member', 'desc')
+                        ->limit(5)
+                        ->get()
+                );
             }),
         ];
     }
