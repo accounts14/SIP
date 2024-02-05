@@ -15,6 +15,7 @@ class MessageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'   => $this->id,
             'content'   => $this->content,
             'is_read'   => $this->is_read,
             'type'      => $this->type ?: NULL,
@@ -22,6 +23,7 @@ class MessageResource extends JsonResource
                 return [
                     'uuid'  => $this->sender->uuid,
                     'name'  => $this->sender->name,
+                    'avatar' => $this->sender->avatar,
                 ];
             }),
             'created_at'    => $this->created_at,
