@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\UserCandidate;
 use App\Http\Requests\UserCandidateRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserCandidateController extends Controller
 {
@@ -109,6 +110,16 @@ class UserCandidateController extends Controller
      */
     public function destroy(UserCandidate $student)
     {
+        if (DB::table('student_registrations')->where('student_id', $student->id)->count()) {
+            return response()->json([
+                'msg' => 'Data Siswa ini masih menjadi referensi di data Registrasi.!'
+            ], 422);
+        }
+        if (DB::table('user_members')->where('student_id', $student->id)->count()) {
+            return response()->json([
+                'msg' => 'Data Siswa ini masih menjadi referensi di data lain.!'
+            ], 422);
+        }
         $student->delete();
         return response()->json([
             'data'  => $student,

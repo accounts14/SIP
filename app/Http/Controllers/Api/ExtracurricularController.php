@@ -23,6 +23,9 @@ class ExtracurricularController extends Controller
                     ->orWhere('instructors', 'like', "%$q%");
             });
         }
+        if ($request->has('schoolId')) {
+            $data->where('school_id', $request->schoolId);
+        }
         return response()->json(['data' => ExtracurricularResource::collection($data->get())]);
     }
 

@@ -42,6 +42,10 @@ class SchoolResource extends JsonResource
             'province'      => $this->province,
             'city_id'       => $this->city_id,
             'city'          => $this->city,
+            'district_id'   => $this->district_id,
+            'district'      => $this->district,
+            'subdistrict_id'=> $this->subdistrict_id,
+            'subdistrict'   => $this->subdistrict,
             'teachers_count'=> $this->whenCounted('teachers'),
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);

@@ -93,4 +93,12 @@ class School extends Model
     public function city() :BelongsTo {
         return $this->belongsTo(City::class, 'city_id', 'city_id');
     }
+
+    public function district() :BelongsTo {
+        return $this->belongsTo(District::class, 'district_id', 'dis_id');
+    }
+
+    public function subdistrict() :BelongsTo {
+        return $this->belongsTo(SubDistrict::class, 'subdistrict_id', 'subdis_id');
+    }
 }

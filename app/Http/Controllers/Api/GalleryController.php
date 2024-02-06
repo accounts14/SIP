@@ -31,6 +31,10 @@ class GalleryController extends Controller
             });
             $param .= '&q='.$q;
         }
+        if ($req->has('schoolId')) {
+            $schools->where('school_id', $req->schoolId);
+            $param .= '&schoolId='.$req->schoolId;
+        }
         $count = $schools->count();
         $nextPageUrl = null;
         if ($count > $limit * $page) {

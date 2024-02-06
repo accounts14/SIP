@@ -33,6 +33,10 @@ class AchievementController extends Controller
             });
             $param .= '&q='.$q;
         }
+        if ($req->has('schoolId')) {
+            $data->where('school_id', $req->schoolId);
+            $param .= '&schoolId='.$req->schoolId;
+        }
         $count = $data->count();
         $nextPageUrl = null;
         if ($count >= $limit * $page) {

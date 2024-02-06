@@ -7,6 +7,7 @@ use App\Models\RegistrationForm;
 use App\Http\Requests\RegistrationFormRequest;
 use App\Http\Resources\RegistrationFormResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RegistrationFormController extends Controller
 {
@@ -152,6 +153,11 @@ class RegistrationFormController extends Controller
      */
     public function destroy(RegistrationForm $registration_form)
     {
+        if (DB::table('student_registrations')->where('registration_form_id', $registration_form->id)->count()) {
+            return response()->json([
+                'msg' => 'Form Pendaftaran ini masih menjadi referensi di Pendaftaran Siswa.!'
+            ], 422);
+        }
         $registration_form->delete();
         return response()->json([
             'data'  => $registration_form,

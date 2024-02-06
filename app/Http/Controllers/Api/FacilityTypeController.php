@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\FacilityType;
 use App\Http\Requests\FacilityTypeRequest;
+use Illuminate\Support\Facades\DB;
 
 class FacilityTypeController extends Controller
 {
@@ -68,6 +69,11 @@ class FacilityTypeController extends Controller
      */
     public function destroy(FacilityType $facilityType)
     {
+        if (DB::table('facilities')->where('type_id', $facilityType->id)->count()) {
+            return response()->json([
+                'msg' => 'Kategori ini masih menjadi referensi di data Fasilitas.!'
+            ], 422);
+        }
         $facilityType->delete();
         return response()->json([
             'data'  => $facilityType,
