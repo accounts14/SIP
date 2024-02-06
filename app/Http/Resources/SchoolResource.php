@@ -42,6 +42,7 @@ class SchoolResource extends JsonResource
             'province'      => $this->province,
             'city_id'       => $this->city_id,
             'city'          => $this->city,
+            'teachers_count'=> $this->whenCounted('teachers'),
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);
             }),

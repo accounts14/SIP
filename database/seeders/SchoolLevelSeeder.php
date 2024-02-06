@@ -18,6 +18,8 @@ class SchoolLevelSeeder extends Seeder
         DB::table('school_levels')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         SchoolLevel::insert([
+            ['name' => 'Pendidikan Anak Usia Dini', 'prefix' => 'PAUD', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Taman Kanak-kanak', 'prefix' => 'TK', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Sekolah Dasar', 'prefix' => 'SD', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Madrasah Ibtidaiyah', 'prefix' => 'MI', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Sekolah Menengah Pertama', 'prefix' => 'SMP', 'created_at' => now(), 'updated_at' => now()],
