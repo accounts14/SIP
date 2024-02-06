@@ -72,7 +72,7 @@ class ChatController extends Controller
         $authenticatedUserId = auth()->user()->id;
         $oppositeUserId = User::where('uuid', $uuid)->first()->id;
 
-        $messages = Message::where('recipient_id', $authenticatedUserId)
+        $messages = Message::with('sender')->where('recipient_id', $authenticatedUserId)
             ->where('sender_id', $oppositeUserId)
             ->orWhere(function ($query) use ($authenticatedUserId, $oppositeUserId) {
                 $query->where("recipient_id", $oppositeUserId)
