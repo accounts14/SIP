@@ -41,7 +41,7 @@ Route::post('register', RegisterController::class);
 
 Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
-Route::middleware(['auth:api'])->prefix('api')->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('me', function() {
         return ['user' => new UserResource(Auth::user())];
@@ -93,3 +93,21 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('achievement', AchievementController::class);
     Route::apiResource('gallery', GalleryController::class);
 });
+
+// without login
+
+// Route::prefix('schools')->group(function() {
+//     Route::get('/', [SchoolController::class, 'index']);
+//     Route::get('/{identifier}', [SchoolController::class, 'show'])
+//         ->where('identifier', '[0-9]+|[a-z0-9-]+');
+//     Route::post('/', [SchoolController::class, 'store']);
+//     Route::put('/{id}', [SchoolController::class, 'update']);
+//     Route::delete('/{id}', [SchoolController::class, 'destroy']);
+//     Route::put('/generate-user/{id}', [SchoolController::class, 'genUser']);
+// });
+
+// Route::apiResource('school-levels', SchoolLevelConroller::class);
+
+// Route::get('locations/{type}', 'LocationsController@getByType')
+// ->where('type', 'province|city|district|subdistrict')
+// ->name('locations.get');

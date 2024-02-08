@@ -16,7 +16,7 @@ class SchoolTableSeeder extends Seeder
      */
     public function run()
     {
-        School::create([
+        School::firstOrCreate([
             'name' => 'Secrash School',
             'type' => 'Swasta',
             'accreditation' => 'A',
@@ -28,8 +28,8 @@ class SchoolTableSeeder extends Seeder
             'curriculum' => 'K13',
             'student' => '760',
             'location' => 'Jln. Banten Kp.40',
-            'longitude' => 0,
-            'latitude' => 0,
+            'longitude' => '105.246391',
+            'latitude' => '-5.433050',
             'link_location' => '',
             'telephone' => '085161561337',
             'web' => 'https://www.secrash.com',
