@@ -48,7 +48,7 @@ class LocationsController extends Controller
             case 'subdistrict':
                 $query = Subdistrict::query();
                 if ($request->id) {
-                    $query->where('district_id', $request->id);
+                    $query->where('dis_id', $request->id);
                 }
 
                 if ($request->name) {

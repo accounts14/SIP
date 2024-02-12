@@ -62,6 +62,7 @@ class SchoolResource extends JsonResource
             'achievements'  => $this->whenLoaded('achievements', function() {
                 return $this->achievements;
             }),
+            'is_member' => $this->is_member ? true : false,
         ];
     }
 }
