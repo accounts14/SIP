@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Http\Requests\FacilityRequest;
 use App\Http\Resources\FacilityResource;
 use App\Models\Gallery;
+use Illuminate\Http\Request;
 
 class FacilityController extends Controller
 {
@@ -39,21 +40,8 @@ class FacilityController extends Controller
         ];
         $facility = Facility::create($data);
 
-        if ($request->hasFile('files')) {
-            $files = $request->file('files');
-            foreach ($files as $file) {
-                $fileName = "F-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
-                $path = $file->move('storage/facilities', $fileName);
-                $img[] = [
-                    'imageable_type' => 'App\Models\Facility',
-                    'imageable_id'=> $facility->id,
-                    'caption'     => 'Image of '.$fileName,
-                    'description' => 'Description of '.$fileName,
-                    'path'        => $path,
-                    'school_id'   => $request->school_id,
-                ];
-            }
-            Gallery::insert($img);
+        if ($request->hasFile('images')) {
+            $this->doUpload($request->file('images'), $facility);
         }
         return response()->json([
             'data' => new FacilityResource($facility),
@@ -77,8 +65,14 @@ class FacilityController extends Controller
     public function update(FacilityRequest $request, Facility $facility)
     {
         $data = $request->all();
-        foreach($data as $k => $v) {
-            $facility->$k = $v;
+        if ($data['type_id']) {
+            $facility->type_id = $data['type_id'];
+        }
+        if ($data['description']) {
+            $facility->description = $data['description'];
+        }
+        if ($data['condition']) {
+            $facility->condition = $data['condition'];
         }
         $facility->save();
         return response()->json([
@@ -97,5 +91,32 @@ class FacilityController extends Controller
             'data' => new FacilityResource($facility),
             'msg'  => 'Data fasilitas berhasil dihapus',
         ], 200);
+    }
+
+    public function uploadImg(Request $request, Facility $id) {
+        if ($request->hasFile('images')) {
+            $this->doUpload($request->file('images'), $id);
+            return response()->json([
+                'msg'  => 'Gambar berhasil diupload',
+            ], 200);
+        }
+    }
+
+    private function doUpload($files, $facility) {
+        foreach ($files as $file) {
+            $fileName = "F-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+            $path = $file->move('storage/facilities', $fileName);
+            $img[] = [
+                'imageable_type' => 'App\Models\Facility',
+                'imageable_id'=> $facility->id,
+                'caption'     => 'Caption of facility',
+                'description' => 'Description for image '.$fileName,
+                'path'        => $path,
+                'school_id'   => $facility->school_id,
+            ];
+        }
+        if (count($img)) {
+            Gallery::insert($img);
+        }
     }
 }

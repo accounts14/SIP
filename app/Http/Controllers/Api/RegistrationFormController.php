@@ -21,7 +21,7 @@ class RegistrationFormController extends Controller
         $limit = $request->limit ?? 10;
         $ofs   = ($page - 1) * $limit;
         $order = $request->order ?? 'id';
-        $ordtp = $request->orderType ?? 'asc';
+        $ordtp = $request->orderType ?? 'desc';
         $q = $request->q ?? null;
         $sch = $request->sch ?? null;
         $schId = $request->schId ?? null;

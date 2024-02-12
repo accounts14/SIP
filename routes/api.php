@@ -88,6 +88,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('user-member', UserMemberController::class);
     
     Route::apiResource('facility-type', FacilityTypeController::class);
+    Route::post('facility/upload/{id}', [FacilityController::class, 'uploadImg']);
     Route::apiResource('facility', FacilityController::class);
     Route::apiResource('extracurricular', ExtracurricularController::class);
     Route::apiResource('achievement', AchievementController::class);

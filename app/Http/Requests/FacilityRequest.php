@@ -28,7 +28,7 @@ class FacilityRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->isMethod('get')) {
+        if ($this->isMethod('get') || $this->isMethod('put')) {
 			return [];
 		}
         return [

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\SchoolScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Gallery extends Model
 {
@@ -21,7 +22,7 @@ class Gallery extends Model
     // img type :
     // App\Models\Facility
     
-    public function imageable()
+    public function imageable(): MorphTo
     {
         return $this->morphTo();
     }
