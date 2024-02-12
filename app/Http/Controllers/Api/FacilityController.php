@@ -119,4 +119,10 @@ class FacilityController extends Controller
             Gallery::insert($img);
         }
     }
+
+    public function bySchool($schID)
+    {
+        $data = Facility::where('school_id', $schID);
+        return response()->json(['data' => FacilityResource::collection($data->get())]);
+    }
 }

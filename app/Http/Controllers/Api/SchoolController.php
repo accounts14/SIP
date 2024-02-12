@@ -81,11 +81,11 @@ class SchoolController extends Controller
     public function show($identifier)
     {
         $school = School::with([
-            'testimonies',
+            // 'testimonies',
             'schoolLevels',
-            'facilities',
-            'extracurriculars',
-            'achievements',
+            // 'facilities',
+            // 'extracurriculars',
+            // 'achievements',
         ])->withCount('teachers')->findByIdOrSlug($identifier);
         return new SchoolResource($school);
     }

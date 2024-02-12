@@ -79,4 +79,10 @@ class ExtracurricularController extends Controller
             'msg'  => 'Data Ekstrakurikuler berhasil dihapus',
         ], 200);
     }
+
+    public function bySchool($schID)
+    {
+        $data = Extracurricular::where('school_id', $schID);
+        return response()->json(['data' => ExtracurricularResource::collection($data->get())]);
+    }
 }

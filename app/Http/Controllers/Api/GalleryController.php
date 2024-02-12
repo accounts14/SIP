@@ -123,4 +123,10 @@ class GalleryController extends Controller
         $gallery->delete();
         return response()->json(['msg'  => 'Gambar berhasil dihapus'], 200);
     }
+
+    public function bySchool($schID)
+    {
+        $data = Gallery::where('school_id', $schID);
+        return response()->json(['data' => $data->get()]);
+    }
 }

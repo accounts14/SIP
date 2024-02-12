@@ -109,4 +109,10 @@ class TeacherController extends Controller
             'msg'   => 'Data Guru berhasil dihapus',
         ], 200);
     }
+
+    public function bySchool($schID)
+    {
+        $data = Teacher::where('school_id', $schID);
+        return response()->json(['data' => $data->get()]);
+    }
 }

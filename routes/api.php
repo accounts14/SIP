@@ -39,22 +39,15 @@ use Illuminate\Support\Facades\Auth;
 
 Route::post('register', RegisterController::class);
 
-Route::post('/admin/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
+Route::post('/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('me', function() {
         return ['user' => new UserResource(Auth::user())];
     });
     // Web 
     Route::get('products', 'WebProductController@index');
-    // location
-    // id only : /api/locations/{type}?id=1
-    // name only : /api/locations/{type}?name=YourName
-    // id & name : /api/locations/{type}?id=1&name=YourName
-    Route::get('locations/{type}', 'LocationsController@getByType')
-        ->where('type', 'province|city|district|subdistrict')
-        ->name('locations.get');
 
     Route::prefix('schools')->group(function() {
         Route::get('/', [SchoolController::class, 'index']);
@@ -65,8 +58,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::delete('/{id}', [SchoolController::class, 'destroy']);
         Route::put('/generate-user/{id}', [SchoolController::class, 'genUser']);
     });
-    Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
-    Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
     
     Route::post('testimonies', [TestimonyController::class, 'store']);
 
@@ -93,6 +84,31 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('extracurricular', ExtracurricularController::class);
     Route::apiResource('achievement', AchievementController::class);
     Route::apiResource('gallery', GalleryController::class);
+});
+
+// get data for member (mobile app)
+Route::middleware(['auth:api'])->group(function () {
+    // location
+    // id only : /api/locations/{type}?id=1
+    // name only : /api/locations/{type}?name=YourName
+    // id & name : /api/locations/{type}?id=1&name=YourName
+    Route::get('locations/{type}', 'LocationsController@getByType')
+        ->where('type', 'province|city|district|subdistrict')
+        ->name('locations.get');
+
+    Route::prefix('schools')->group(function() {
+        Route::get('/', [SchoolController::class, 'index']);
+        Route::get('/facility/{schID}', [FacilityController::class, 'bySchool']);
+        Route::get('/extracurricular/{schID}', [ExtracurricularController::class, 'bySchool']);
+        Route::get('/achievement/{schID}', [AchievementController::class, 'bySchool']);
+        Route::get('/gallery/{schID}', [GalleryController::class, 'bySchool']);
+        Route::get('/teachers/{schID}', [TeacherController::class, 'bySchool']);
+        Route::get('/{identifier}', [SchoolController::class, 'show'])
+            ->where('identifier', '[0-9]+|[a-z0-9-]+');
+    });
+
+    Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
+    Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
 });
 
 // without login

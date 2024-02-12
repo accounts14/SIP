@@ -111,4 +111,10 @@ class AchievementController extends Controller
             'msg'  => 'Data Penghargaan berhasil dihapus',
         ], 200);
     }
+
+    public function bySchool($schID)
+    {
+        $data = Achievement::where('school_id', $schID);
+        return response()->json(['data' => AchievementResource::collection($data->get())]);
+    }
 }
