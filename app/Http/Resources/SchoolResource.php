@@ -39,13 +39,13 @@ class SchoolResource extends JsonResource
             'banner'        => $this->banner,
             'slug'          => $this->slug,
             'province_id'   => $this->province_id,
-            'province_name' => $this->province->prov_name,
+            'province_name' => $this->province->prov_name ?? null,
             'city_id'       => $this->city_id,
-            'city_name'     => $this->city->city_name,
+            'city_name'     => $this->city->city_name ?? null,
             'district_id'   => $this->district_id,
-            'district_name' => $this->district->dis_name,
+            'district_name' => $this->district->dis_name ?? null,
             'subdistrict_id'=> $this->subdistrict_id,
-            'subdistrict_name' => $this->subdistrict->subdis_name,
+            'subdistrict_name' => $this->subdistrict->subdis_name ?? null,
             'teachers_count'=> $this->whenCounted('teachers'),
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);

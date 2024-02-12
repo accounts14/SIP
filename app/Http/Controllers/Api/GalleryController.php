@@ -126,7 +126,10 @@ class GalleryController extends Controller
 
     public function bySchool($schID)
     {
-        $data = Gallery::where('school_id', $schID);
+        $data = Gallery::where([
+            'imageable_id' => null,
+            'school_id' => $schID,
+        ]);
         return response()->json(['data' => $data->get()]);
     }
 }
