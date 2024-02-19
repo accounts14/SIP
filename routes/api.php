@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\UserCandidateController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserMemberController;
+use App\Http\Controllers\Api\ExtracurricularTypeController;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,7 +40,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::post('register', RegisterController::class);
 
-Route::post('/login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
+Route::post('login/{role}', 'AuthController@login')->where('role', 'superadmin|admin|member')->name('login');
 
 Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -82,6 +83,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::post('facility/upload/{id}', [FacilityController::class, 'uploadImg']);
     Route::apiResource('facility', FacilityController::class);
     Route::apiResource('extracurricular', ExtracurricularController::class);
+    Route::apiResource('extracurricular-type', ExtracurricularTypeController::class);
     Route::apiResource('achievement', AchievementController::class);
     Route::apiResource('gallery', GalleryController::class);
 });

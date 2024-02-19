@@ -16,7 +16,7 @@ class ExtracurricularResource extends JsonResource
     {
         return [
             'id'               => $this->id,
-            'name'             => $this->name,
+            'name'             => $this->type->name,
             'description'      => $this->description,
             'instructors'      => $this->instructors,
             'number_of_members'=> $this->number_of_members,

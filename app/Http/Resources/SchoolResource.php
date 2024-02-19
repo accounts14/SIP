@@ -33,7 +33,7 @@ class SchoolResource extends JsonResource
             'telephone'     => $this->telephone,
             'web'           => $this->web,
             'motto'         => $this->motto,
-            'content_array' => $this->content_array,
+            // 'content_array' => $this->content_array,
             'school_status' => $this->school_status,
             'avatar'        => $this->avatar,
             'banner'        => $this->banner,

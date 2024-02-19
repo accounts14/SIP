@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('schools', function (Blueprint $table) {
-            $table->text('vision')->nullable();
-            $table->text('mission')->nullable();
+            $table->text('mission')->nullable()->after('motto');
+            $table->text('vision')->nullable()->after('motto');
         });
     }
 

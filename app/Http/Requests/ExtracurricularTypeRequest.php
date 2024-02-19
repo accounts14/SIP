@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ExtracurricularRequest extends FormRequest
+class ExtracurricularTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,8 +32,7 @@ class ExtracurricularRequest extends FormRequest
 			return [];
 		}
         return [
-            'type_id'   => 'required',
-            'school_id' => 'required',
+            'name' => 'required|max:150',
         ];
     }
 }

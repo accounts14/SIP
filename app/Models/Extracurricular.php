@@ -12,16 +12,22 @@ class Extracurricular extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
+        // 'name',
         'description',
         'instructors',
         'number_of_members',
         'school_id',
+        'type_id',
     ];
 
     protected $hidden = [
         'deleted_at',
     ];
+
+    public function type()
+    {
+        return $this->belongsTo(ExtracurricularType::class, 'type_id');
+    }
 
     public function school()
     {

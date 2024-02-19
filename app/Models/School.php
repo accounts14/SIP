@@ -33,7 +33,7 @@ class School extends Model
         'telephone',
         'web',
         'motto',
-        'content_array',
+        // 'content_array',
         'school_status',
         'is_member',
         'avatar',
