@@ -67,9 +67,9 @@ class User extends Authenticatable
         return $this->hasMany(UserMember::class, 'user_id');
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::addGlobalScope(new SchoolScope);
-    }
+    // protected static function boot()
+    // {
+    //     parent::boot();
+    //     static::addGlobalScope(new SchoolScope);
+    // }
 }

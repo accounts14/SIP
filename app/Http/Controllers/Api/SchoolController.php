@@ -83,9 +83,10 @@ class SchoolController extends Controller
         $school = School::with([
             // 'testimonies',
             'schoolLevels',
-            // 'facilities',
-            // 'extracurriculars',
-            // 'achievements',
+            'facilities',
+            'extracurriculars',
+            'achievements',
+            'superadmin'
         ])->withCount('teachers')->findByIdOrSlug($identifier);
         return new SchoolResource($school);
     }
@@ -95,7 +96,6 @@ class SchoolController extends Controller
         $data['slug']  = Str::slug($data['name']);
         $school             = School::create($data);
         $genUser = $this->genUser($school->id, $school);
-        // return new SchoolResource($school);
         return response()->json([
             'data'  => new SchoolResource($school),
             'login' => $genUser,
@@ -109,7 +109,6 @@ class SchoolController extends Controller
         foreach($data as $k => $v) {
             $id->$k = $v;
         }
-        // $school             = School::where('id', $id)->update($validated);
         $id->save();
         return response()->json([
             'data'  => $id,

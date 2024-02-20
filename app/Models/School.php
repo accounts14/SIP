@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class School extends Model
@@ -33,7 +34,6 @@ class School extends Model
         'telephone',
         'web',
         'motto',
-        // 'content_array',
         'school_status',
         'is_member',
         'avatar',
@@ -100,5 +100,9 @@ class School extends Model
 
     public function subdistrict() :BelongsTo {
         return $this->belongsTo(SubDistrict::class, 'subdistrict_id', 'subdis_id');
+    }
+    
+    public function superadmin() :HasOne {
+        return $this->hasOne(User::class)->where('role', 'superadmin');
     }
 }

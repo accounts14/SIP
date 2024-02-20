@@ -33,7 +33,6 @@ class SchoolResource extends JsonResource
             'telephone'     => $this->telephone,
             'web'           => $this->web,
             'motto'         => $this->motto,
-            // 'content_array' => $this->content_array,
             'school_status' => $this->school_status,
             'avatar'        => $this->avatar,
             'banner'        => $this->banner,
@@ -47,6 +46,10 @@ class SchoolResource extends JsonResource
             'subdistrict_id'=> $this->subdistrict_id,
             'subdistrict_name' => $this->subdistrict->subdis_name ?? null,
             'teachers_count'=> $this->whenCounted('teachers'),
+            'city'          => $this->city,
+            'superadmin'    => $this->whenLoaded('superadmin', function() {
+                return new UserResource($this->superadmin);
+            }),
             'testimonies'   => $this->whenLoaded('testimonies', function() {
                 return TestimonyResource::collection($this->testimonies);
             }),

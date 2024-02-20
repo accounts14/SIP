@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\MessageEvent;
+use App\Events\NewMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
+use App\Http\Resources\MessageThreadResource;
 use App\Models\Message;
+use App\Models\MessageThread;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 
 class ChatController extends Controller
@@ -25,6 +31,7 @@ class ChatController extends Controller
                 DB::raw('MAX(content) as content'),
                 DB::raw('MAX(is_read) as is_read'),
                 DB::raw('MAX(created_at) as created_at'),
+                DB::raw('MAX(thread_id) as thread_id'),
             )
             ->selectRaw("CASE WHEN sender_id = ? AND sender_type = ? THEN recipient_id ELSE sender_id END AS sender_id", [$user->id, $userClass])
             ->selectRaw("CASE WHEN sender_id = ? AND sender_type = ? THEN recipient_type ELSE sender_type END AS sender_type", [$user->id, $userClass])
@@ -47,7 +54,20 @@ class ChatController extends Controller
         $sender = User::where('uuid', $senderUuid)->first();
         $recipient = User::where('uuid', $recipientUuid)->first();
 
+        if(!$request->thread_uuid) {
+            // if this is a new conversation, generate a thread and broadcast it to the opposite user
+            $thread = MessageThread::create([
+                'uuid'      => Str::uuid(),
+                'initiator' => $sender->id,
+                'recipient' => $recipient->id,
+            ]);
+        }
+        else {
+            $thread = MessageThread::where('uuid', $request->thread_uuid)->first();
+        }
+
         $message = Message::create([
+            'thread_id'     => $thread->id,
             'content'       => $request->message,
             'sender_id'     => $sender->id,
             'sender_type'   => get_class($sender),
@@ -56,45 +76,31 @@ class ChatController extends Controller
 
         ]);
 
-        $message->load('sender');
-        $broadcastedMessage = new MessageResource($message);
+        $thread->load(["latestMessage", "initiatorData", "recipientData"]);
+        $broadcastedMessage = new MessageThreadResource($thread);
+        $channelName = 'chat-sip-' . $thread->uuid;
 
-        broadcast(new MessageEvent($sender, $recipient, $broadcastedMessage))->toOthers();
+        if(!$request->thread_uuid) {
+            broadcast(new NewMessageEvent("user.$recipient->uuid", $thread))->toOthers();
+        }
+        else {
+            broadcast(new MessageEvent($channelName, $sender, $recipient, $broadcastedMessage))->toOthers();
+        }
 
-        return ['status' => 'Message Sent!', 'message' => $broadcastedMessage];
+        return ['status' => 'Message Sent!', 'message' => $thread];
     }
 
     /** 
      * Display the specified resource.
      */
-    public function show(string $uuid)
+    public function show(string $threadUuid)
     {
-        $authenticatedUserId = auth()->user()->id;
-        $oppositeUserId = User::where('uuid', $uuid)->first()->id;
 
-        $messages = Message::with('sender')->where('recipient_id', $authenticatedUserId)
-            ->where('sender_id', $oppositeUserId)
-            ->orWhere(function ($query) use ($authenticatedUserId, $oppositeUserId) {
-                $query->where("recipient_id", $oppositeUserId)
-                      ->where("sender_id", $authenticatedUserId);
-            })
+        $messages = MessageThread::with(["messages", "initiatorData", "recipientData"])
+            ->where('uuid', $threadUuid)
             ->orderBy("created_at", "DESC")
-            ->get();
-
-        $messages = $messages->map(function ($message) use ($authenticatedUserId) {
-            // Check if the sender_id is the same as $authenticatedUserId
-            if ($message->sender_id == $authenticatedUserId) {
-                $message->type = 'sent';
-            }
-            // Check if the recipient_id is the same as $oppositeUserId
-            else {
-                $message->type = 'received';
-            }
-        
-            return $message;
-        });
-
-        return MessageResource::collection($messages);
+            ->first();
+        return new MessageThreadResource($messages);
     }
 
     /**
@@ -111,5 +117,15 @@ class ChatController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getThreads() {
+        $userId = auth()->user()->id;
+        $threads = MessageThread::with(['latestMessage'])
+            ->where('initiator', $userId)
+            ->orWhere('recipient', $userId)
+            ->get();
+        
+        return MessageThreadResource::collection($threads);
     }
 }

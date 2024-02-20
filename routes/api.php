@@ -47,8 +47,10 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::get('me', function() {
         return ['user' => new UserResource(Auth::user())];
     });
-    // Web 
     Route::get('products', 'WebProductController@index');
+    Route::get('locations/{type}', 'LocationsController@getByType')
+        ->where('type', 'province|city|district|subdistrict')
+        ->name('locations.get');
 
     Route::prefix('schools')->group(function() {
         Route::get('/', [SchoolController::class, 'index']);
@@ -73,7 +75,10 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('registration-form', RegistrationFormController::class);
     Route::get('registration-form/sch/{sch_id}', [RegistrationFormController::class, 'fromSchool']);
     Route::apiResource('school-levels', SchoolLevelConroller::class);
+
     Route::apiResource('messages', ChatController::class);
+    Route::get('message-threads', [ChatController::class, 'getThreads']);
+
     Route::apiResource('teachers', TeacherController::class);
     
     Route::apiResource('users', UserController::class);
