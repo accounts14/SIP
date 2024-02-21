@@ -5,10 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolRequest;
 use App\Http\Resources\SchoolResource;
+use App\Models\Achievement;
+use App\Models\Extracurricular;
+use App\Models\Facility;
+use App\Models\Gallery;
+use App\Models\RegistrationForm;
 use App\Models\School;
+use App\Models\Teacher;
+use App\Models\Testimony;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SchoolController extends Controller
@@ -120,42 +127,42 @@ class SchoolController extends Controller
     public function destroy(School $id)
     {
         // RegistrationForm, StudentRegistration, Testimony, User
-        if (DB::table('users')->where('school_id', $id->id)->count()) {
+        if (User::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data User.!'
             ], 422);
         }
-        if (DB::table('achievements')->where('school_id', $id->id)->count()) {
+        if (Achievement::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Penghargaan.!'
             ], 422);
         }
-        if (DB::table('facilities')->where('school_id', $id->id)->count()) {
+        if (Facility::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Fasilitas.!'
             ], 422);
         }
-        if (DB::table('extracurriculars')->where('school_id', $id->id)->count()) {
+        if (Extracurricular::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Ekstrakurikuler.!'
             ], 422);
         }
-        if (DB::table('galleries')->where('school_id', $id->id)->count()) {
+        if (Gallery::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Galeri.!'
             ], 422);
         }
-        if (DB::table('registration_forms')->where('school_id', $id->id)->count()) {
+        if (RegistrationForm::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Form Registrasi.!'
             ], 422);
         }
-        if (DB::table('teachers')->where('school_id', $id->id)->count()) {
+        if (Teacher::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Guru.!'
             ], 422);
         }
-        if (DB::table('testimonies')->where('school_id', $id->id)->count()) {
+        if (Testimony::where('school_id', $id->id)->count()) {
             return response()->json([
                 'msg' => 'Data Sekolah ini masih menjadi referensi di data Testimoni.!'
             ], 422);

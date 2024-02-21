@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\RegencyController;
 use App\Http\Controllers\Admin\SchoolLevelConroller;
 use App\Http\Controllers\Admin\SubdistrictController;
 use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ExtracurricularController;
 use App\Http\Controllers\Api\FacilityController;
@@ -86,6 +87,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
     Route::apiResource('extracurricular-type', ExtracurricularTypeController::class);
     Route::apiResource('achievement', AchievementController::class);
     Route::apiResource('gallery', GalleryController::class);
+    Route::apiResource('news', BlogController::class);
 });
 
 // get data for member (mobile app)
