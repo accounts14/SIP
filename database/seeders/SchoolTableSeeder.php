@@ -34,7 +34,6 @@ class SchoolTableSeeder extends Seeder
             'telephone' => '085161561337',
             'web' => 'https://www.secrash.com',
             'motto' => '',
-            // 'content_array' => '',
             'school_status' => '1',
             'avatar' => '',
             'banner' => '',
