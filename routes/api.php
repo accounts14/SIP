@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\RegencyController;
 use App\Http\Controllers\Admin\SchoolLevelConroller;
 use App\Http\Controllers\Admin\SubdistrictController;
 use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\ExtracurricularController;
@@ -112,6 +113,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/achievement/{schID}', [AchievementController::class, 'bySchool']);
         Route::get('/gallery/{schID}', [GalleryController::class, 'bySchool']);
         Route::get('/teachers/{schID}', [TeacherController::class, 'bySchool']);
+        Route::get('/news/{schID}', [BlogController::class, 'bySchool']);
+        Route::get('/agenda/{schID}', [AgendaController::class, 'bySchool']);
         Route::get('/{identifier}', [SchoolController::class, 'show'])
             ->where('identifier', '[0-9]+|[a-z0-9-]+');
     });
