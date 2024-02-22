@@ -70,16 +70,16 @@ class UserCandidateController extends Controller
         if ($data['id']) {
             unset($data['id']);
         }
-        if ($data['provinsi']['id']) {
+        if (isset($data['provinsi']['id'])) {
             $data['provinsi'] = json_encode($data['provinsi']);
         }
-        if ($data['kabupaten']['id']) {
+        if (isset($data['kabupaten']['id'])) {
             $data['kabupaten'] = json_encode($data['kabupaten']);
         }
-        if ($data['kecamatan']['id']) {
+        if (isset($data['kecamatan']['id'])) {
             $data['kecamatan'] = json_encode($data['kecamatan']);
         }
-        if ($data['kelurahan']['id']) {
+        if (isset($data['kelurahan']['id'])) {
             $data['kelurahan'] = json_encode($data['kelurahan']);
         }
         return response()->json([
@@ -102,16 +102,16 @@ class UserCandidateController extends Controller
     public function update(UserCandidateRequest $request, UserCandidate $student)
     {
         $data = $request->all();
-        if ($data['provinsi']['id']) {
+        if (isset($data['provinsi']['id'])) {
             $data['provinsi'] = json_encode($data['provinsi']);
         }
-        if ($data['kabupaten']['id']) {
+        if (isset($data['kabupaten']['id'])) {
             $data['kabupaten'] = json_encode($data['kabupaten']);
         }
-        if ($data['kecamatan']['id']) {
+        if (isset($data['kecamatan']['id'])) {
             $data['kecamatan'] = json_encode($data['kecamatan']);
         }
-        if ($data['kelurahan']['id']) {
+        if (isset($data['kelurahan']['id'])) {
             $data['kelurahan'] = json_encode($data['kelurahan']);
         }
         if (UserCandidate::where('id', $student->id)->update($data)) {
