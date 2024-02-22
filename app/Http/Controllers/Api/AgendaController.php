@@ -81,7 +81,7 @@ class AgendaController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($data['activity']);
         $data['school_id'] = $request->user()->school_id;
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         return response()->json([

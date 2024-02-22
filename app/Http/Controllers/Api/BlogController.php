@@ -89,7 +89,7 @@ class BlogController extends Controller
         } else {
             $data['published_at'] = null;
         }
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         return response()->json([

@@ -74,7 +74,7 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $data = $request->all();
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         $data['uuid'] = Str::uuid();

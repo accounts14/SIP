@@ -31,7 +31,7 @@ class FacilityTypeController extends Controller
     public function store(FacilityTypeRequest $request)
     {
         $data = $request->all();
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         return response()->json([

@@ -35,7 +35,7 @@ class ExtracurricularController extends Controller
     public function store(ExtracurricularRequest $request)
     {
         $data = $request->all();
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         return response()->json([

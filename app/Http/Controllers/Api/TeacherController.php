@@ -64,7 +64,7 @@ class TeacherController extends Controller
     public function store(TeacherRequest $request)
     {
         $data = $request->all();
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         $data['jurusan'] = json_encode($data['jurusan']);
