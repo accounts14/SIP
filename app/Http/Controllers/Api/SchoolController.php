@@ -177,7 +177,7 @@ class SchoolController extends Controller
         $userLatitude = $request->get('latitude');
         $userLongitude = $request->get('longitude');
 
-        $distance = 10;
+        $distance = $request->query->get('distance') ?? 10;
 
         $nearestSchools = School::select('*')
             ->selectRaw(
@@ -185,10 +185,27 @@ class SchoolController extends Controller
                 [$userLatitude, $userLongitude, $userLatitude]
             )
             ->having('distance', '<=', $distance)
-            ->orderBy('distance')
-            ->get();
+            ->orderBy('distance');
 
-        return response()->json(['nearestSchools' => $nearestSchools]);
+        $query = strtolower($request->query->get('query'));
+        if ($query) {
+            $nearestSchools->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($query).'%']);
+        }
+
+        $level = $request->query->get('level'); 
+        if ($level) {
+            $nearestSchools->where('level', $level);
+        }
+    
+        $type = $request->query->get('type'); 
+        if ($type) {
+            $nearestSchools->whereRaw('LOWER(type) = ?', [strtolower($type)]);
+        }
+    
+        $queryParams = $request->query();
+        $data = $nearestSchools->paginate(10);
+        $data->appends($queryParams);
+        return SchoolResource::collection($data);
     }
 
     public function getNearestSchoolsByLocation(Request $request) {
@@ -196,7 +213,22 @@ class SchoolController extends Controller
         $locId = $request->get('location_id');
         
         $filteredSchools = School::with('schoolLevels');
-        
+    
+        $query = strtolower($request->query->get('query'));
+        if ($query) {
+            $filteredSchools->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($query).'%']);
+        }
+
+        $level = $request->query->get('level'); 
+        if ($level) {
+            $filteredSchools->where('level', $level);
+        }
+    
+        $type = $request->query->get('type'); 
+        if ($type) {
+            $filteredSchools->whereRaw('LOWER(type) = ?', [strtolower($type)]);
+        }
+
         switch ($locType) {
             case 'province':
                 $filteredSchools->where('province_id', $locId);
@@ -215,7 +247,10 @@ class SchoolController extends Controller
                 break;
         }
 
-        return SchoolResource::collection($filteredSchools->get());
+        $queryParams = $request->query();
+        $data = $filteredSchools->paginate(10);
+        $data->appends($queryParams);
+        return SchoolResource::collection($data);
     }
 
     public function genUser($id, $sch = null) {
