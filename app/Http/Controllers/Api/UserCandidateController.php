@@ -70,10 +70,18 @@ class UserCandidateController extends Controller
         if ($data['id']) {
             unset($data['id']);
         }
-        $data['provinsi'] = json_encode($data['provinsi']);
-        $data['kabupaten'] = json_encode($data['kabupaten']);
-        $data['kecamatan'] = json_encode($data['kecamatan']);
-        $data['kelurahan'] = json_encode($data['kelurahan']);
+        if ($data['provinsi']['id']) {
+            $data['provinsi'] = json_encode($data['provinsi']);
+        }
+        if ($data['kabupaten']['id']) {
+            $data['kabupaten'] = json_encode($data['kabupaten']);
+        }
+        if ($data['kecamatan']['id']) {
+            $data['kecamatan'] = json_encode($data['kecamatan']);
+        }
+        if ($data['kelurahan']['id']) {
+            $data['kelurahan'] = json_encode($data['kelurahan']);
+        }
         return response()->json([
             'data'  => UserCandidate::create($data),
             'msg'   =>'Data Siswa berhasil ditambah.',
@@ -94,10 +102,18 @@ class UserCandidateController extends Controller
     public function update(UserCandidateRequest $request, UserCandidate $student)
     {
         $data = $request->all();
-        $data['provinsi'] = json_encode($data['provinsi']);
-        $data['kabupaten'] = json_encode($data['kabupaten']);
-        $data['kecamatan'] = json_encode($data['kecamatan']);
-        $data['kelurahan'] = json_encode($data['kelurahan']);
+        if ($data['provinsi']['id']) {
+            $data['provinsi'] = json_encode($data['provinsi']);
+        }
+        if ($data['kabupaten']['id']) {
+            $data['kabupaten'] = json_encode($data['kabupaten']);
+        }
+        if ($data['kecamatan']['id']) {
+            $data['kecamatan'] = json_encode($data['kecamatan']);
+        }
+        if ($data['kelurahan']['id']) {
+            $data['kelurahan'] = json_encode($data['kelurahan']);
+        }
         if (UserCandidate::where('id', $student->id)->update($data)) {
             return response()->json(['msg' =>'Data Siswa berhasil diubah.'], 200);
         } else {
