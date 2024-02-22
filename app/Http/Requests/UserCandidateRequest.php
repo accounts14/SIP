@@ -33,6 +33,7 @@ class UserCandidateRequest extends FormRequest
 		}
         return [
             'nik' => "required|unique:user_candidates,nik,{$this->id}|max:16",
+            'nisn' => 'required|max:50',
             'nama' => 'required|max:100',
             'alamat' => 'required|max:200',
             'tempat_lahir' => 'required|max:100',
