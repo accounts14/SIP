@@ -67,7 +67,7 @@ class UserCandidateController extends Controller
     public function store(UserCandidateRequest $request)
     {
         $data = $request->all();
-        if ($data['id']) {
+        if (isset($data['id'])) {
             unset($data['id']);
         }
         if (isset($data['provinsi']['id'])) {
