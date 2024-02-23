@@ -28,6 +28,12 @@ class User extends Authenticatable
         'role',
         'school_id',
         'uuid',
+        'linkedin',
+        'twitter',
+        'tiktok',
+        'facebook',
+        'instagram',
+        'avatar',
     ];
 
     /**

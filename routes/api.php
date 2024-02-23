@@ -121,6 +121,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('get-nearest-schools-coord', [SchoolController::class, 'getNearestSchoolsByCoord']);
     Route::get('get-nearest-schools-location', [SchoolController::class, 'getNearestSchoolsByLocation']);
+
+    Route::post('users/upload-avatar', [UserController::class, 'uploadAvatar']);
 });
 
 // without login

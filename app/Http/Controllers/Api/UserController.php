@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -124,5 +125,24 @@ class UserController extends Controller
             'data'  => $user,
             'msg'   => 'Data Admin berhasil dihapus',
         ], 200);
+    }
+
+    public function uploadAvatar(Request $request) {
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            if ($file->getSize() > 1024000) {
+                return response()->json(['msg'  =>'Ukuran file terlalu besar (max 1 mb)'], 422);
+            }
+            if (in_array($file->getClientOriginalExtension(), ['jpg', 'jpeg', 'png'])) {
+                $fileName = "A-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+                $path = $file->move('storage/avatar', $fileName);
+                
+                User::where('id', $request->user()->id)->update(['avatar' => $path]);
+                return response()->json(['msg'  =>'Avatar berhasil diubah.'], 200);
+            } else {
+                return response()->json(['msg'  =>'Format file hanya boleh (jpg, jpeg & png).!'], 422);
+            }
+        }
+        return response()->json(['msg'  =>'Tidak ada file ditemukan.!'], 422);
     }
 }
