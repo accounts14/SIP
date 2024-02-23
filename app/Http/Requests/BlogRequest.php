@@ -31,7 +31,8 @@ class BlogRequest extends FormRequest
 			return [];
 		}
         return [
-            'title' => "required"
+            'title' => "required",
+            'content' => 'max: 10000',
         ];
     }
 }

@@ -108,6 +108,11 @@ class UserController extends Controller
             unset($data['password']);
         }
         $data['school_id'] = auth()->user()->school_id;
+        if (auth()->user()->role != 'superadmin') {
+            if (isset($data['role'])) {
+                unset($data['role']);
+            }
+        }
         if (User::where('id', $user->id)->update($data)) {
             return response()->json(['msg' =>'Data Admin berhasil diubah.'], 200);
         } else {

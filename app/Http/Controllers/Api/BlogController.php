@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Http\Requests\BlogRequest;
 use App\Http\Resources\BlogResource;
+use App\Models\Gallery;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -92,8 +93,14 @@ class BlogController extends Controller
         if (isset($data['id'])) {
             unset($data['id']);
         }
+        $blog = Blog::create($data);
+        
+        if ($request->hasFile('images')) {
+            $this->doUpload($request->file('images'), $blog);
+        }
+
         return response()->json([
-            'data' => new BlogResource(Blog::create($data)),
+            'data' => new BlogResource($blog),
             'msg'  =>'Post baru berhasil dibuat' . ($data['published_at'] ? ' dan dipublikasikan.' : ' sebagai draf.'),
         ], 200);
     }
@@ -157,5 +164,23 @@ class BlogController extends Controller
             $data->where('title', 'like', "%$request->q%");
         }
         return BlogResource::collection($data->pagination($limit));
+    }
+    
+    private function doUpload($files, $blog) {
+        foreach ($files as $file) {
+            $fileName = "B-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+            $path = $file->move('storage/blog', $fileName);
+            $img[] = [
+                'imageable_type' => 'App\Models\Blog',
+                'imageable_id'=> $blog->id,
+                'caption'     => 'Caption for blog',
+                'description' => 'Description for image of blog',
+                'path'        => $path,
+                'school_id'   => $blog->school_id,
+            ];
+        }
+        if (count($img)) {
+            Gallery::insert($img);
+        }
     }
 }
