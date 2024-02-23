@@ -81,13 +81,13 @@ class ChatController extends Controller
         $channelName = 'chat-sip-' . $thread->uuid;
 
         if(!$request->thread_uuid) {
-            broadcast(new NewMessageEvent("user.$recipient->uuid", $thread))->toOthers();
+            broadcast(new NewMessageEvent("user.$recipient->uuid", $broadcastedMessage))->toOthers();
         }
         else {
             broadcast(new MessageEvent($channelName, $sender, $recipient, $broadcastedMessage))->toOthers();
         }
 
-        return ['status' => 'Message Sent!', 'message' => $thread];
+        return ['status' => 'Message Sent!', 'message' => $broadcastedMessage];
     }
 
     /** 
@@ -95,10 +95,8 @@ class ChatController extends Controller
      */
     public function show(string $threadUuid)
     {
-
-        $messages = MessageThread::with(["messages", "initiatorData", "recipientData"])
+        $messages = MessageThread::with(["messages.sender", "initiatorData", "recipientData"])
             ->where('uuid', $threadUuid)
-            ->orderBy("created_at", "DESC")
             ->first();
         return new MessageThreadResource($messages);
     }

@@ -89,8 +89,9 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(string $identifier)
     {
+        $user = User::where('id', $identifier)->orWhere('uuid', $identifier)->first();
         return response()->json(['data' => $user], 200);
     }
 
