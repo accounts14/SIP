@@ -18,10 +18,10 @@ class CityController extends Controller
         $limit = $request->get('limit', null);
         $cities = City::with('districts');
         if ($request->q) {
-            $cities->where('city_name', 'like', "%$request->q%");
+            $cities->where('name', 'like', "%$request->q%");
         }
         if ($request->prov) {
-            $cities->where('prov_id', $request->prov);
+            $cities->where('province_id', $request->prov);
         }
         if ($limit) {
             return CityResource::collection($cities->paginate($limit));

@@ -46,7 +46,7 @@ class SchoolController extends Controller
             $param .= '&level='.$req->level;
         }
         if ($req->has('prov')) {
-            $schools->where('province_id', $req->prov);
+            $schools->where('id', $req->prov);
             $param .= '&prov='.$req->prov;
         }
         if ($req->has('kab')) {
