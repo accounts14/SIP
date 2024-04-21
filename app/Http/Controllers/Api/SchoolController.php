@@ -290,10 +290,16 @@ class SchoolController extends Controller
     }
     
     public function uploadImg(Request $request, $type = 'avatar') {
+        if (!auth()->user()->school_id) {
+            return response()->json([
+                'message'  => 'Tidak ada izin akses.!',
+            ], 403);
+        }
         if ($request->hasFile('image')) {
-            $this->doUpload($request->file('image'), $type);
+            $path = $this->doUpload($request->file('image'), $type);
             return response()->json([
                 'msg'  => 'Gambar berhasil diupload',
+                'path' => $path,
             ], 200);
         } else {
             return response()->json([
@@ -319,5 +325,6 @@ class SchoolController extends Controller
             $sch->banner = $path;
         }
         $sch->save();
+        return $path;
     }
 }
