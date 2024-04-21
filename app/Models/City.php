@@ -9,8 +9,9 @@ class City extends Model
 {
     use HasFactory;
     
-    protected $primaryKey = 'city_id';
-    protected $fillable = ['name', 'prov_id'];
+    // protected $primaryKey = 'city_id';
+    protected $table = 'city';
+    protected $fillable = ['name', 'province_id'];
 
     public function schools()
     {
@@ -19,12 +20,12 @@ class City extends Model
 
     public function province()
     {
-        return $this->belongsTo(Province::class, 'prov_id', 'prov_id');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
     public function districts()
     {
-        return $this->hasMany(District::class, 'dis_id', 'city_id');
+        return $this->hasMany(District::class, 'city_id', 'id');
     }
 
 }

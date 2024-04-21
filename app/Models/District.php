@@ -9,18 +9,17 @@ class District extends Model
 {
     use HasFactory;
 
-    protected $table = 'districts';
-    protected $primaryKey = 'dis_id';
-    protected $fillable = ['dis_name', 'city_id'];
+    protected $table = 'district';
+    protected $fillable = ['name', 'city_id'];
 
     public function city()
     {
-        return $this->belongsTo(City::class, 'city_id', 'dis_id');
+        return $this->belongsTo(City::class, 'city_id', 'id');
     }
 
     public function subdistricts()
     {
-        return $this->hasMany(SubDistrict::class, 'dis_id', 'dis_id');
+        return $this->hasMany(SubDistrict::class, 'district_id', 'id');
     }
 
     public function schools()

@@ -15,8 +15,8 @@ class ProvinceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'prov_id'   => $this->prov_id,
-            'prov_name' => $this->prov_name,
+            'prov_id'   => $this->id,
+            'prov_name' => $this->name,
             'schools'   => $this->whenLoaded('schools', function() {
                 return SchoolResource::collection($this->schools);
             }),

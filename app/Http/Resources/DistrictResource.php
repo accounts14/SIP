@@ -15,8 +15,8 @@ class DistrictResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'dis_id'    => $this->dis_id,
-            'dis_name'  => $this->dis_name,
+            'dis_id'    => $this->id,
+            'dis_name'  => $this->name,
             'city'      => $this->whenLoaded('city', function() {
                 return new CityResource($this->city);
             }),

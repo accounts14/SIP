@@ -18,7 +18,7 @@ class ProvinceController extends Controller
         $limit = $request->get('limit', null);
         $provinces = Province::with('cities');
         if ($request->q) {
-            $provinces->where('prov_name', 'like', "%$request->q%");
+            $provinces->where('name', 'like', "%$request->q%");
         }
         if ($limit) {
             return ProvinceResource::collection($provinces->paginate($limit));

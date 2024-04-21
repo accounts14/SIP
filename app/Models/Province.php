@@ -9,12 +9,12 @@ class Province extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'prov_id';
-    protected $fillable = ['prov_name', 'status'];
+    protected $table = 'province';
+    protected $fillable = ['name', 'status'];
 
     public function cities()
     {
-        return $this->hasMany(City::class, 'prov_id', 'prov_id');
+        return $this->hasMany(City::class, 'province_id', 'id');
     }
 
     public function schools()
