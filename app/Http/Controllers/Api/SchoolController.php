@@ -288,4 +288,36 @@ class SchoolController extends Controller
             ], 422);
         }
     }
+    
+    public function uploadImg(Request $request, $type = 'avatar') {
+        if ($request->hasFile('image')) {
+            $this->doUpload($request->file('image'), $type);
+            return response()->json([
+                'msg'  => 'Gambar berhasil diupload',
+            ], 200);
+        } else {
+            return response()->json([
+                'msg'  => 'Gambar tidak ada.!',
+            ], 422);
+        }
+    }
+
+    private function doUpload($file, $type) {
+        $sch = School::where('id', auth()->user()->school_id)->first();
+        $fileName = strtoupper($type)."-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+        $path = $file->move('storage/schools', $fileName);
+
+        if ($type == 'avatar') {
+            if ($sch->avatar) {
+                unlink($sch->avatar);
+            }
+            $sch->avatar = $path;
+        } else {
+            if ($sch->banner) {
+                unlink($sch->banner);
+            }
+            $sch->banner = $path;
+        }
+        $sch->save();
+    }
 }

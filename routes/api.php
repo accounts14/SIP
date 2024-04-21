@@ -62,6 +62,7 @@ Route::middleware(['auth:api'])->prefix('api')->group(function () {
         Route::put('/{id}', [SchoolController::class, 'update']);
         Route::delete('/{id}', [SchoolController::class, 'destroy']);
         Route::put('/generate-user/{id}', [SchoolController::class, 'genUser']);
+        Route::post('/upload/{type}', [SchoolController::class, 'uploadImg']);
     });
     
     Route::post('testimonies', [TestimonyController::class, 'store']);

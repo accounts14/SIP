@@ -35,7 +35,7 @@ class UserController extends Controller
                 $data->where('school_id', '!=', null)->with('school');
             }
         } else {
-            $data->with('school');
+            $data->where('school_id', auth()->user()->school_id)->with('school');
         }
 
         if ($q) {
