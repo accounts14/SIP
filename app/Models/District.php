@@ -2,29 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class District extends Model
 {
-    use HasFactory;
-
+    // FIX: Tambahkan baris ini
     protected $table = 'district';
-    protected $fillable = ['name', 'city_id'];
+
+    protected $fillable = [
+        'name',
+        'district_code',
+        'city_id',
+    ];
 
     public function city()
     {
-        return $this->belongsTo(City::class, 'city_id', 'id');
+        return $this->belongsTo(City::class, 'city_id');
     }
-
-    public function subdistricts()
-    {
-        return $this->hasMany(SubDistrict::class, 'district_id', 'id');
-    }
-
-    public function schools()
-    {
-        return $this->hasMany(School::class);
-    }
-
 }

@@ -13,16 +13,13 @@ class ProvinceResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
-        return [
-            'prov_id'   => $this->id,
-            'prov_name' => $this->name,
-            'schools'   => $this->whenLoaded('schools', function() {
-                return SchoolResource::collection($this->schools);
-            }),
-            'cities'    => $this->whenLoaded('cities', function() {
-                return CityResource::collection($this->cities);
-            }),
-        ];
-    }
+{
+    return [
+        'prov_id'   => $this->id,
+        'prov_name' => $this->name,
+        'prov_code' => $this->prov_code,  // ← tambah ini
+        'schools'   => $this->whenLoaded('schools', fn() => SchoolResource::collection($this->schools)),
+        'cities'    => $this->whenLoaded('cities',  fn() => CityResource::collection($this->cities)),
+    ];
+}
 }

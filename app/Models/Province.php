@@ -10,15 +10,14 @@ class Province extends Model
     use HasFactory;
 
     protected $table = 'province';
-    protected $fillable = ['name', 'status'];
+
+    protected $fillable = [
+        'name',
+        'prov_code',
+    ];
 
     public function cities()
     {
-        return $this->hasMany(City::class, 'province_id', 'id');
-    }
-
-    public function schools()
-    {
-        return $this->hasMany(School::class);
+        return $this->hasMany(City::class, 'province_id');
     }
 }

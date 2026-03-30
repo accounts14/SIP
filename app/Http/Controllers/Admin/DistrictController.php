@@ -20,8 +20,8 @@ class DistrictController extends Controller
         if ($request->q) {
             $districts->where('name', 'like', "%$request->q%");
         }
-        if ($request->kab) {
-            $districts->where('city_id', $request->kab);
+        if ($request->kab || $request->city_id) {
+            $districts->where('city_id', $request->kab ?? $request->city_id);
         }
         if ($limit) {
             return DistrictResource::collection($districts->paginate($limit));
@@ -35,7 +35,7 @@ class DistrictController extends Controller
     public function store(DistrictRequest $request)
     {
         $district = District::create($request->all());
-        $district->load('city', 'subdistricts');
+        $district->load('city');
         return new DistrictResource($district);
     }
 
@@ -48,7 +48,7 @@ class DistrictController extends Controller
         if ($request->noLoad) {
             return new DistrictResource($district);
         }
-        $district->load('city', 'subdistricts');
+        $district->load('city');
         return new DistrictResource($district);
     }
 

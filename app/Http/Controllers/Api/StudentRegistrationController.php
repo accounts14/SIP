@@ -27,6 +27,18 @@ class StudentRegistrationController extends Controller
 
         $data = StudentRegistration::select("*");
 
+        // Jika role member: filter hanya registrasi miliknya sendiri (via user_members)
+        if (auth()->user()->role === 'member') {
+            $userMember = \DB::table('user_members')
+                ->where('user_id', auth()->id())
+                ->first();
+            if ($userMember) {
+                $data->where('student_id', $userMember->student_id);
+            } else {
+                $data->whereRaw('0=1'); // no data jika belum punya student record
+            }
+        }
+
         if ($status) {
             $param .= '&status'.$status;
             $data->where('status', $status);
@@ -72,6 +84,8 @@ class StudentRegistrationController extends Controller
     public function store(StudentRegistrationRequest $request)
     {
         $data = $request->all();
+        // Status default '0' (menunggu) jika tidak dikirim
+        $data['status'] = $data['status'] ?? '0';
         return response()->json([
             'data'  => StudentRegistration::create($data),
             'msg'   =>'Registrasi berhasil.',

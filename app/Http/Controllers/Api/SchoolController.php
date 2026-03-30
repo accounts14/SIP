@@ -31,7 +31,7 @@ class SchoolController extends Controller
         $q = $req->q ?? null;
         $param = '';
 
-        $schools = School::select('*')->with('schoolLevels');
+        $schools = School::select('*')->with(['schoolLevels', 'city', 'province', 'district']);
         if ($q) {
             $schools->where(function($query) use ($q) {
                 $query->where('name', 'like', "%$q%")
@@ -46,7 +46,7 @@ class SchoolController extends Controller
             $param .= '&level='.$req->level;
         }
         if ($req->has('prov')) {
-            $schools->where('id', $req->prov);
+            $schools->where('province_id', $req->prov); // FIX: was incorrectly using 'id' instead of 'province_id'
             $param .= '&prov='.$req->prov;
         }
         if ($req->has('kab')) {

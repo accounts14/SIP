@@ -15,10 +15,10 @@ class DistrictResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'dis_id'    => $this->id,
-            'dis_name'  => $this->name,
-            'city'      => $this->whenLoaded('city', function() {
-                return new CityResource($this->city);
+            'id'   => $this->id,
+            'name'  => $this->name,
+            'district_code' => $this->district_code, // ← tambah ini
+            'city'      => $this->whenLoaded('city', function() { return new CityResource($this->city);
             }),
             'schools'   => $this->whenLoaded('schools', function() {
                 return SchoolResource::collection($this->schools);

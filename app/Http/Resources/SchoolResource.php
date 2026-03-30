@@ -38,15 +38,15 @@ class SchoolResource extends JsonResource
             'banner'        => $this->banner ? url($this->banner) : null,
             'slug'          => $this->slug,
             'province_id'   => $this->province_id,
-            'province_name' => $this->province->prov_name ?? null,
             'city_id'       => $this->city_id,
-            'city_name'     => $this->city->city_name ?? null,
             'district_id'   => $this->district_id,
-            'district_name' => $this->district->dis_name ?? null,
             'subdistrict_id'=> $this->subdistrict_id,
-            'subdistrict_name' => $this->subdistrict->subdis_name ?? null,
             'teachers_count'=> $this->whenCounted('teachers'),
-            'city'          => $this->city,
+            'province_name'    => $this->province->name ?? null,   // ✅ kolom 'name'
+            'city_name'        => $this->city->name ?? null,        // ✅ kolom 'name'
+            'district_name'    => $this->district->name ?? null,    // ✅ kolom 'name'
+            'subdistrict_name' => null,                             // ✅ tabel tidak ada, hardcode null
+            'city'             => $this->whenLoaded('city'),        // ✅ hanya tampil kalau di-load
             'superadmin'    => $this->whenLoaded('superadmin', function() {
                 return new UserResource($this->superadmin);
             }),

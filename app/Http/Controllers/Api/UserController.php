@@ -28,15 +28,10 @@ class UserController extends Controller
         $data = User::select("*");
 
         if (!auth()->user()->school_id) {
-            $type = $request->type ?? 'app';
-            if ($type == 'app') {
-                $data->where('school_id', null);
-            } else {
-                $data->where('school_id', '!=', null)->with('school');
-            }
-        } else {
-            $data->where('school_id', auth()->user()->school_id)->with('school');
-        }
+    $data->with('school'); // superadmin lihat semua user
+} else {
+    $data->where('school_id', auth()->user()->school_id)->with('school');
+}
 
         if ($q) {
             $data->where(function($query) use ($q) {
@@ -75,15 +70,61 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $data = $request->all();
+
         if (isset($data['id'])) {
             unset($data['id']);
         }
-        $data['uuid'] = Str::uuid();
+
+        $data['uuid']     = Str::uuid();
         $data['password'] = bcrypt($data['password']);
-        $data['school_id'] = auth()->user()->school_id;
+
+        /*
+         * FIX: Dulu school_id selalu di-override dengan school_id milik
+         * user yang login (superadmin → NULL), sehingga school_id dari
+         * request diabaikan.
+         *
+         * Sekarang:
+         * - Jika yang login adalah superadmin (school_id = null), gunakan
+         *   school_id yang dikirim dari request (boleh null juga).
+         * - Jika yang login adalah admin sekolah (punya school_id), tetap
+         *   pakai school_id miliknya (tidak boleh diubah oleh request).
+         */
+        $loggedInSchoolId = auth()->user()->school_id;
+
+        if ($loggedInSchoolId) {
+            // Admin sekolah hanya bisa buat user di sekolahnya sendiri
+            $data['school_id'] = $loggedInSchoolId;
+        } else {
+            // Superadmin: pakai school_id dari request (bisa null atau ID sekolah tertentu)
+            $data['school_id'] = isset($data['school_id']) ? $data['school_id'] : null;
+        }
+
+        /*
+         * FIX: type juga harus diambil dari request.
+         * Pastikan nilainya valid sesuai enum di DB: 'sip', 'school_admin', 'school_head'
+         * Jika tidak dikirim atau tidak valid, set null.
+         */
+        $allowedTypes = ['sip', 'school_admin', 'school_head'];
+        if (!isset($data['type']) || !in_array($data['type'], $allowedTypes)) {
+            $data['type'] = null;
+        }
+
+        /*
+         * FIX: role hanya boleh diset oleh superadmin.
+         * Admin biasa tidak boleh membuat user dengan role superadmin.
+         */
+        // AUTO-ENFORCE: type memaksa role
+if (in_array($data['type'], ['school_head', 'sip'])) {
+    $data['role'] = 'superadmin';  // ← paksa superadmin
+} elseif ($data['type'] === 'school_admin') {
+    $data['role'] = 'admin';
+}
+
+        $user = User::create($data);
+
         return response()->json([
-            'data'  => User::create($data),
-            'msg'   =>'Data Admin berhasil ditambah.',
+            'data' => new UserResource($user),
+            'msg'  => 'Data Admin berhasil ditambah.',
         ], 200);
     }
 
@@ -102,21 +143,53 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user)
     {
         $data = $request->all();
+
+        // Handle password
         if (isset($data['password']) && $data['password'] != '') {
             $data['password'] = bcrypt($data['password']);
         } else {
             unset($data['password']);
         }
-        $data['school_id'] = auth()->user()->school_id;
-        if (auth()->user()->role != 'superadmin') {
+
+        /*
+         * FIX: Sama seperti store — jangan selalu override school_id
+         * dengan school_id milik user yang login.
+         */
+        $loggedInSchoolId = auth()->user()->school_id;
+
+        if ($loggedInSchoolId) {
+            // Admin sekolah hanya bisa update user di sekolahnya sendiri
+            $data['school_id'] = $loggedInSchoolId;
+        } else {
+            // Superadmin: gunakan school_id dari request
+            // Jika request kirim null, berarti lepas dari sekolah
+            if (array_key_exists('school_id', $data)) {
+                $data['school_id'] = $data['school_id'] ?: null;
+            }
+            // Jika request tidak kirim school_id sama sekali, jangan ubah
+        }
+
+        /*
+         * FIX: type juga harus diambil dari request saat update.
+         */
+        $allowedTypes = ['sip', 'school_admin', 'school_head'];
+        if (array_key_exists('type', $data)) {
+            if (!in_array($data['type'], $allowedTypes)) {
+                $data['type'] = null;
+            }
+        }
+
+        // Hanya superadmin yang boleh mengubah role
+        if (auth()->user()->role !== 'superadmin') {
             if (isset($data['role'])) {
                 unset($data['role']);
             }
         }
+
         if (User::where('id', $user->id)->update($data)) {
-            return response()->json(['msg' =>'Data Admin berhasil diubah.'], 200);
+            return response()->json(['msg' => 'Data Admin berhasil diubah.'], 200);
         } else {
-            return response()->json(['msg' =>'Data Admin TIDAK berhasil diubah.'], 422);
+            return response()->json(['msg' => 'Data Admin TIDAK berhasil diubah.'], 422);
         }
     }
 
@@ -127,27 +200,28 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->json([
-            'data'  => $user,
-            'msg'   => 'Data Admin berhasil dihapus',
+            'data' => $user,
+            'msg'  => 'Data Admin berhasil dihapus',
         ], 200);
     }
 
-    public function uploadAvatar(Request $request) {
+    public function uploadAvatar(Request $request)
+    {
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             if ($file->getSize() > 1024000) {
-                return response()->json(['msg'  =>'Ukuran file terlalu besar (max 1 mb)'], 422);
+                return response()->json(['msg' => 'Ukuran file terlalu besar (max 1 mb)'], 422);
             }
             if (in_array($file->getClientOriginalExtension(), ['jpg', 'jpeg', 'png'])) {
-                $fileName = "A-".time()."_".str_replace('+', '_', $file->getClientOriginalName());
+                $fileName = "A-" . time() . "_" . str_replace('+', '_', $file->getClientOriginalName());
                 $path = $file->move('storage/avatar', $fileName);
-                
+
                 User::where('id', $request->user()->id)->update(['avatar' => $path]);
-                return response()->json(['msg'  =>'Avatar berhasil diubah.'], 200);
+                return response()->json(['msg' => 'Avatar berhasil diubah.'], 200);
             } else {
-                return response()->json(['msg'  =>'Format file hanya boleh (jpg, jpeg & png).!'], 422);
+                return response()->json(['msg' => 'Format file hanya boleh (jpg, jpeg & png).!'], 422);
             }
         }
-        return response()->json(['msg'  =>'Tidak ada file ditemukan.!'], 422);
+        return response()->json(['msg' => 'Tidak ada file ditemukan.!'], 422);
     }
 }

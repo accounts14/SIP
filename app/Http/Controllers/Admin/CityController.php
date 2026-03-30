@@ -10,63 +10,65 @@ use Illuminate\Http\Request;
 
 class CityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $limit = $request->get('limit', null);
-        $cities = City::with('districts');
+        $cities = City::with('province', 'districts');
+
         if ($request->q) {
-            $cities->where('name', 'like', "%$request->q%");
+            $cities->where('name', 'like', "%{$request->q}%");
         }
-        if ($request->prov) {
-            $cities->where('province_id', $request->prov);
+
+        // FIX: Filter by province_id, cast ke integer agar query benar
+        if ($request->prov || $request->province_id) {
+            $cities->where('province_id', (int) ($request->prov ?? $request->province_id));
         }
-        if ($limit) {
-            return CityResource::collection($cities->paginate($limit));
+
+        if ($request->limit) {
+            return CityResource::collection($cities->paginate((int) $request->limit));
         }
+
         return CityResource::collection($cities->get());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(CityRequest $request)
     {
-        $city = City::create($request->all());
+        $validated = $request->validated();
+
+        // FIX: Pastikan province_id tersimpan sebagai integer
+        $validated['province_id'] = (int) $validated['province_id'];
+
+        $city = City::create($validated);
         $city->load('province', 'districts');
+
         return new CityResource($city);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id, Request $request)
+    public function show(string $id)
     {
-        $city = City::findOrFail($id);
-        if ($request->noLoad) {
-            return new CityResource($city);
-        }
-        $city->load('province', 'districts');
+        $city = City::with('province', 'districts')->findOrFail($id);
         return new CityResource($city);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(CityRequest $request, string $id)
     {
-        City::where('id', $id)->update($request->all());
-        return response()->json(['status' => 'success', 'message' => 'Data successfully updated']);
+        $validated = $request->validated();
+        $validated['province_id'] = (int) $validated['province_id'];
+
+        $city = City::findOrFail($id);
+        $city->update($validated);
+        $city->load('province', 'districts');
+
+        return new CityResource($city);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        City::where('id', $id)->delete();
-        return response()->json(['status' => 'success', 'message' => 'Data successfully deleted']);
+        $city = City::findOrFail($id);
+        $city->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Kota berhasil dihapus'
+        ]);
     }
 }

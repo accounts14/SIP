@@ -10,57 +10,81 @@ use Illuminate\Http\Request;
 
 class ProvinceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        $limit = $request->get('limit', null);
+        $limit     = $request->get('limit', null);
         $provinces = Province::with('cities');
+
         if ($request->q) {
-            $provinces->where('name', 'like', "%$request->q%");
+            $provinces->where('name', 'like', "%{$request->q}%");
         }
+
         if ($limit) {
             return ProvinceResource::collection($provinces->paginate($limit));
         }
+
         return ProvinceResource::collection($provinces->get());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ProvinceRequest $request)
     {
         $validated = $request->validated();
+
+        // Mapping prov_name -> name untuk kolom DB
+        $validated['name'] = $validated['prov_name'];
+        unset($validated['prov_name']);
+
+        // Jika prov_code kosong, set null agar tidak error di kolom bigint
+        if (empty($validated['prov_code'])) {
+            $validated['prov_code'] = null;
+        } else {
+            $validated['prov_code'] = (int) $validated['prov_code'];
+        }
+
         $prov = Province::create($validated);
-        return response()->json($prov);
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $prov,
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        $prov = Province::findOrFail($id);
+        $prov = Province::with('cities')->findOrFail($id);
         return new ProvinceResource($prov);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(ProvinceRequest $request, string $id)
     {
+        $prov      = Province::findOrFail($id);
         $validated = $request->validated();
-        Province::where('id', $id)->update($validated);
-        return response()->json(['status' => 'success', 'message' => 'Data successfully updated']);
+
+        $validated['name'] = $validated['prov_name'];
+        unset($validated['prov_name']);
+
+        if (empty($validated['prov_code'])) {
+            $validated['prov_code'] = null;
+        } else {
+            $validated['prov_code'] = (int) $validated['prov_code'];
+        }
+
+        $prov->update($validated);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data successfully updated',
+            'data'    => $prov,
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        Province::where('id', $id)->delete();
-        return response()->json(['status' => 'success', 'message' => 'Data successfully deleted']);
+        Province::findOrFail($id)->delete();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data successfully deleted',
+        ]);
     }
 }

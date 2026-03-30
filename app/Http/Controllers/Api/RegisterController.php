@@ -24,7 +24,9 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'name'      => 'required|max:200',
             'email'     => 'required|email|unique:users',
-            'password'  => 'required|min:8|confirmed'
+            'password'  => 'required|min:8|confirmed',
+            'role'      => 'required|in:superadmin,admin,member',
+            'type'      => 'nullable|in:sip,school_admin,school_head',
         ]);
         //if validation fails
         if ($validator->fails()) {
@@ -34,10 +36,11 @@ class RegisterController extends Controller
         //create user
         $user = User::create([
             'name'      => $request->name,
-            'uuid'      =>  Str::uuid(),
+            'uuid'      => Str::uuid(),
             'email'     => $request->email,
             'password'  => bcrypt($request->password),
-            'role' => 'member'
+            'role'      => $request->role,
+            'type'      => $request->type ?? null,
         ]);
 
         //return response JSON user is created

@@ -7,24 +7,27 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CityResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
-            'city_id'   => $this->id,
-            'city_name' => $this->name,
-            'province'  => $this->whenLoaded('province', function() {
+            // FIX: Gunakan 'id' dan 'name' agar konsisten dengan frontend
+            'id'        => $this->id,
+            'name'      => $this->name,
+            'city_code' => $this->city_code,
+
+            // Relasi province — hanya muncul jika di-load
+            'province'  => $this->whenLoaded('province', function () {
                 return new ProvinceResource($this->province);
             }),
-            'schools'   => $this->whenLoaded('schools', function() {
-                return SchoolResource::collection($this->schools);
-            }),
-            'districts' => $this->whenLoaded('districts', function() {
+
+            // Relasi districts — hanya muncul jika di-load
+            'districts' => $this->whenLoaded('districts', function () {
                 return DistrictResource::collection($this->districts);
+            }),
+
+            // Relasi schools — hanya muncul jika di-load
+            'schools'   => $this->whenLoaded('schools', function () {
+                return SchoolResource::collection($this->schools);
             }),
         ];
     }

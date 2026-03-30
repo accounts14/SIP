@@ -95,7 +95,8 @@ class RegistrationFormController extends Controller
     public function store(RegistrationFormRequest $request)
     {
         $data = $request->all();
-        $data['registration_field'] = json_encode($data['registration_field']);
+        // registration_field opsional — default array kosong jika tidak dikirim
+        $data['registration_field'] = json_encode($data['registration_field'] ?? []);
         return response()->json([
             'data'  => RegistrationForm::create($data),
             'msg'   =>'Form Registrasi berhasil dibuat.',
@@ -167,8 +168,9 @@ class RegistrationFormController extends Controller
     
     public function fromSchool($sch_id)
     {
-        $sch = RegistrationForm::where(['school_id' => $sch_id, 'status' => '1'])
-                ->orderBy('id', 'desc')->first();
-        return response()->json(['data' => $sch], 200);
+        $forms = RegistrationForm::where('school_id', $sch_id)
+                ->orderBy('id', 'desc')
+                ->get();
+        return response()->json(['data' => $forms], 200);
     }
 }
