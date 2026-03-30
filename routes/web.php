@@ -51,6 +51,7 @@ Route::prefix('schools')->group(function() {
 // ==========================================
 Route::view('/login-sekolah', 'auth.login-sekolah')->name('login.sekolah');
 Route::view('/school-dashboard', 'dashboard.sekolah-admin')->name('dashboard.school');
+Route::view('/pimpinan-sekolah', 'dashboard.pimpinan-sekolah')->name('dashboard.pimpinan.sekolah');
 // ==========================================
 // SISWA (MEMBER) PORTAL
 // ==========================================

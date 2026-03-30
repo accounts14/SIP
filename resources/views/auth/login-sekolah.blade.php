@@ -579,7 +579,7 @@
             type: 'school_head', 
             title: 'Selamat Datang, Kepala Sekolah', 
             sub: 'Akses laporan dan pengawasan sekolah Anda',
-            redirect: '/pimpinan' 
+            redirect: '/pimpinan-sekolah' 
         },
     };
 
