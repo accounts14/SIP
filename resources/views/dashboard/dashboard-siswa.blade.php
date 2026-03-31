@@ -54,7 +54,6 @@
         .brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; }
         .brand-sub  { font-size: 10px; color: var(--text-m); margin-top: 1px; }
 
-        /* User pill */
         .user-pill {
             margin: 10px 10px 0;
             padding: 10px 12px;
@@ -109,7 +108,6 @@
 
         .content { flex: 1; overflow-y: auto; padding: 22px 24px; }
 
-        /* ── Page header ── */
         .page-header { margin-bottom: 20px; }
         .page-title  { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; }
         .breadcrumb  { font-size: 12px; color: var(--text-m); margin-top: 2px; }
@@ -230,6 +228,10 @@
         .btn-primary:hover { background: var(--accent-h); }
         .btn-outline { background: white; color: var(--text-s); border: 1px solid var(--border); }
         .btn-outline:hover { background: var(--bg); }
+        .btn-warn { background: var(--warning-bg); color: #92400e; border: 1px solid #fde68a; }
+        .btn-warn:hover { background: var(--warning); color: white; }
+        .btn-danger { background: var(--error-bg); color: var(--error); border: 1px solid #fecaca; }
+        .btn-danger:hover { background: var(--error); color: white; }
 
         /* ── Toast ── */
         .toast {
@@ -252,6 +254,29 @@
         /* ── Loading ── */
         .skel { background: linear-gradient(90deg,#f0f4f8 25%,#e2e8f0 50%,#f0f4f8 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 6px; }
         @keyframes shimmer { to { background-position: -200% 0; } }
+
+        /* ── Upload zone ── */
+        .upload-zone {
+            border: 2px dashed #cbd5e1; border-radius: 12px;
+            padding: 28px; text-align: center; cursor: pointer;
+            transition: all .2s; background: #f8fafc;
+        }
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: var(--accent); background: var(--accent-l);
+        }
+        .upload-zone.disabled {
+            opacity: .5; cursor: not-allowed; pointer-events: none;
+        }
+
+        /* ── Proof card ── */
+        .proof-card {
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px 16px; background: white;
+            display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+        }
+        .proof-card.proof-pending  { border-left: 3px solid var(--warning); }
+        .proof-card.proof-verified { border-left: 3px solid var(--success); }
+        .proof-card.proof-rejected { border-left: 3px solid var(--error); }
 
         @media (max-width: 900px) {
             .info-grid, .form-grid { grid-template-columns: 1fr; }
@@ -384,22 +409,12 @@ async function loadUser() {
             name.trim().split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
         localStorage.setItem('user_name', name);
 
-        // Ambil data student via user_members
-        // Karena UserMember global scope filter by user_id untuk member,
-        // kita pakai GET /api/registration?student=X — tapi perlu student_id dulu
-        // Cara: GET /api/me lalu match di DB tidak exposed, jadi coba ambil registration langsung
-        // (controller sudah support filter by student via param &student=X)
-        // Alternatif: ambil semua registration milik user ini (middleware allow member)
         await loadRegistrations();
-
     } catch(e) { console.error(e); }
 }
 
 async function loadRegistrations() {
     try {
-        // GET /api/registration — middleware allow member, backend perlu filter by user
-        // Karena tidak ada auto-filter by user di controller, kita ambil semua
-        // lalu server akan return semua (untuk sekarang) — akan dibenahi di controller nanti
         const res = await fetch(`${API}/registration?limit=100`, { headers: HDR });
         if (res.ok) {
             const d = await res.json();
@@ -443,7 +458,7 @@ function toggleSidebar() {
 // ─── DASHBOARD ────────────────────────────────────────
 function renderDashboard() {
     const el = document.getElementById('mainContent');
-    const reg = S.registrations[0]; // Registrasi terbaru/utama
+    const reg = S.registrations[0];
     const st  = reg ? String(reg.status ?? '0') : null;
     const info = st ? (ST[st] || ST['9']) : null;
 
@@ -454,7 +469,6 @@ function renderDashboard() {
     </div>
 
     ${reg ? `
-    <!-- Status hero -->
     <div class="status-hero ${info.cls}">
         <div class="hero-icon">${info.icon}</div>
         <div class="hero-body">
@@ -465,13 +479,11 @@ function renderDashboard() {
         <div class="hero-badge">${info.badge}</div>
     </div>
 
-    <!-- Progress bar -->
     <div class="card" style="margin-bottom:16px;">
         <div class="card-head"><div class="card-title">📊 Alur Pendaftaran</div></div>
         ${buildProgressSteps(st)}
     </div>
 
-    <!-- Info pendaftaran -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
         <div class="card" style="margin-bottom:0;">
             <div class="card-head"><div class="card-title">📋 Detail Pendaftaran</div></div>
@@ -531,7 +543,6 @@ function renderDashboard() {
     </div>
 
     ${st === '3' ? `
-    <!-- Diterima banner -->
     <div style="background:linear-gradient(135deg,#064e3b,#059669);border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;color:white;">
         <div style="font-size:36px">🎉</div>
         <div>
@@ -541,7 +552,6 @@ function renderDashboard() {
         <button class="btn btn-outline" style="margin-left:auto;background:rgba(255,255,255,.15);color:white;border-color:rgba(255,255,255,.2);" onclick="navTo('sekolah')">Info Sekolah</button>
     </div>` : ''}
     ` : `
-    <!-- Belum ada registrasi -->
     <div class="card">
         <div class="empty">
             <div class="empty-ico">📭</div>
@@ -573,7 +583,7 @@ function renderPendaftaran() {
         <div class="page-title">Status Pendaftaran</div>
         <div class="breadcrumb">${S.registrations.length} pendaftaran tercatat</div>
     </div>
-    ${S.registrations.map((reg, i) => {
+    ${S.registrations.map((reg) => {
         const st   = String(reg.status ?? '0');
         const info = ST[st] || ST['9'];
         return `
@@ -659,7 +669,16 @@ async function renderSekolah() {
     }
 }
 
-// ─── PEMBAYARAN ───────────────────────────────────────
+// ─── PEMBAYARAN (FIXED) ───────────────────────────────
+// State untuk halaman pembayaran
+let _payState = {
+    regId: null,
+    existingProofs: [],   // semua proof dari server
+    activeProof: null,    // proof yang sedang aktif (pending/verified)
+    editMode: false,      // true = sedang ganti file
+    selectedFile: null,
+};
+
 async function renderPembayaran() {
     const el = document.getElementById('mainContent');
     const reg = S.registrations[0];
@@ -675,188 +694,303 @@ async function renderPembayaran() {
         return;
     }
 
+    // Reset state
+    _payState = { regId: reg.id, existingProofs: [], activeProof: null, editMode: false, selectedFile: null };
+
     el.innerHTML = `
     <div class="page-header">
         <div class="page-title">Bukti Pembayaran</div>
-        <div class="breadcrumb">Upload dan pantau status verifikasi bukti pembayaran Anda</div>
+        <div class="breadcrumb">Upload dan pantau verifikasi bukti pembayaran pendaftaran ke <strong>${esc(reg.school?.name || 'sekolah tujuan')}</strong></div>
     </div>
 
-    <!-- Upload Card -->
-    <div class="card">
-        <div class="card-head">
-            <div class="card-title">📤 Upload Bukti Pembayaran</div>
-        </div>
-        <div class="card-body">
-            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;font-size:13px;color:#1d4ed8;margin-bottom:16px;">
-                ℹ️ Upload bukti transfer / struk pembayaran untuk pendaftaran <strong>${esc(reg.school?.name || 'sekolah tujuan')}</strong>.
-                Format yang diterima: <strong>JPG, PNG, PDF</strong> (maks. 5MB).
-            </div>
-            <div id="uploadZone" style="border:2px dashed #cbd5e1;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:#f8fafc;"
-                 onclick="document.getElementById('fileInput').click()"
-                 ondragover="event.preventDefault();this.style.borderColor='#3b82f6';this.style.background='#eff6ff';"
-                 ondragleave="this.style.borderColor='#cbd5e1';this.style.background='#f8fafc';"
-                 ondrop="handleDrop(event)">
-                <div style="font-size:36px;margin-bottom:8px;">📎</div>
-                <div style="font-weight:600;color:#475569;margin-bottom:4px;">Klik atau seret file ke sini</div>
-                <div style="font-size:12px;color:#94a3b8;">JPG, PNG, PDF — Maks. 5 MB</div>
-            </div>
-            <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="previewFile(this)">
-
-            <!-- Preview -->
-            <div id="filePreview" style="display:none;margin-top:14px;">
-                <div style="display:flex;align-items:center;gap:12px;background:#f1f5f9;border-radius:10px;padding:12px 14px;">
-                    <div style="font-size:28px;" id="previewIcon">📄</div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="previewName">—</div>
-                        <div style="font-size:11px;color:#94a3b8;" id="previewSize">—</div>
-                    </div>
-                    <button onclick="clearFile()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:4px;">✕</button>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Catatan (opsional)</label>
-                    <input type="text" id="uploadNotes" placeholder="Misal: Transfer BCA tgl 28 Maret 2026" class="form-input" style="font-size:13px;">
-                </div>
-                <button onclick="doUploadPayment(${reg.id})" id="btnUpload"
-                    style="margin-top:12px;width:100%;padding:11px;background:#2563eb;color:white;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
-                    📤 Upload Sekarang
-                </button>
-            </div>
-            <div id="uploadMsg" style="display:none;margin-top:12px;"></div>
-        </div>
+    <!-- Info Banner -->
+    <div style="background:var(--info-bg);border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;font-size:13px;color:#1d4ed8;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;flex-shrink:0;">ℹ️</span>
+        <span>Kamu hanya dapat mengirimkan <strong>satu bukti pembayaran</strong>. Jika ditolak atau ingin mengganti, gunakan tombol <strong>Ganti File</strong>.</span>
     </div>
 
-    <!-- Riwayat Upload -->
+    <!-- Bukti saat ini -->
     <div class="card">
         <div class="card-head">
-            <div class="card-title">📋 Riwayat Bukti Pembayaran</div>
+            <div class="card-title">📎 Bukti Pembayaran Kamu</div>
+            <div id="proofStatusBadge"></div>
         </div>
-        <div id="proofList" style="padding:0 16px 16px;">
-            <div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">
+        <div id="proofSection" style="padding:0;">
+            <!-- Dirender oleh JS -->
+            <div style="padding:32px;text-align:center;">
                 <div style="width:24px;height:24px;border:2px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 10px;"></div>
-                Memuat riwayat...
+                <div style="color:var(--text-m);font-size:13px;">Memuat...</div>
             </div>
         </div>
-    </div>`;
+    </div>
 
-    loadPaymentProofs(reg.id);
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+
+    // Load proofs
+    await refreshProofSection(reg.id);
 }
 
-let selectedFile = null;
+async function refreshProofSection(regId) {
+    try {
+        const res  = await fetch(`${API}/payment-proof?registration_id=${regId}`, { headers: HDR });
+        const data = await res.json();
+        _payState.existingProofs = data.data || [];
+    } catch(e) {
+        _payState.existingProofs = [];
+    }
 
-function previewFile(input) {
+    // Tentukan proof aktif: verified > pending > rejected (ambil terbaru)
+    const proofs = _payState.existingProofs;
+    const verified = proofs.find(p => p.status === 'verified');
+    const pending  = proofs.find(p => p.status === 'pending');
+    const rejected = proofs.filter(p => p.status === 'rejected');
+
+    _payState.activeProof = verified || pending || (rejected[0] || null);
+
+    renderProofSection();
+}
+
+function renderProofSection() {
+    const section = document.getElementById('proofSection');
+    const badge   = document.getElementById('proofStatusBadge');
+    if (!section) return;
+
+    const ap = _payState.activeProof;
+
+    // ── Belum ada proof sama sekali ──
+    if (!ap) {
+        if (badge) badge.innerHTML = `<span style="background:#f1f5f9;color:var(--text-m);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;">Belum ada bukti</span>`;
+        section.innerHTML = renderUploadForm(false);
+        return;
+    }
+
+    // ── Ada proof ──
+    const statusMap = {
+        pending:  { bg:'#fef3c7', color:'#92400e', icon:'⏳', label:'Menunggu Verifikasi', desc:'Buktimu sedang direview oleh admin sekolah. Mohon tunggu.' },
+        verified: { bg:'#ecfdf5', color:'#065f46', icon:'✅', label:'Terverifikasi',        desc:'Bukti pembayaranmu sudah diverifikasi oleh admin sekolah.' },
+        rejected: { bg:'#fef2f2', color:'#dc2626', icon:'❌', label:'Ditolak',              desc:'Buktimu ditolak. Silakan upload ulang dengan file yang benar.' },
+    };
+    const st = statusMap[ap.status] || statusMap.pending;
+    const date = ap.created_at ? new Date(ap.created_at).toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}) : '—';
+    const byLabel = ap.uploaded_by === 'admin' ? '👤 Diupload oleh Admin Sekolah' : '🎓 Diupload olehmu';
+    const canEdit = ap.status === 'pending' || ap.status === 'rejected';
+
+    if (badge) badge.innerHTML = `<span style="background:${st.bg};color:${st.color};border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;">${st.icon} ${st.label}</span>`;
+
+    section.innerHTML = `
+    <!-- Proof card -->
+    <div style="padding:16px;">
+        <div class="proof-card proof-${ap.status}">
+            <div style="width:44px;height:44px;border-radius:10px;background:${st.bg};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${ap.file_name?.match(/\.(jpg|jpeg|png)$/i) ? '🖼️' : '📄'}</div>
+            <div style="flex:1;min-width:0;">
+                <a href="${esc(ap.file_url)}" target="_blank"
+                   style="font-weight:700;font-size:14px;color:var(--accent);text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    ${esc(ap.file_name)}
+                </a>
+                <div style="font-size:12px;color:var(--text-m);margin-top:3px;">${byLabel} · ${date}</div>
+                ${ap.notes ? `<div style="font-size:12px;color:var(--text-s);margin-top:4px;">📝 ${esc(ap.notes)}</div>` : ''}
+            </div>
+            <div style="flex-shrink:0;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <a href="${esc(ap.file_url)}" target="_blank"
+                   style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:#f1f5f9;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text-s);text-decoration:none;">
+                    👁 Lihat File
+                </a>
+                ${canEdit ? `
+                <button onclick="toggleEditMode()" id="btnToggleEdit"
+                    style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:var(--warning-bg);border:1px solid #fde68a;border-radius:8px;font-size:12px;font-weight:600;color:#92400e;cursor:pointer;border:1px solid #fde68a;">
+                    ✏️ Ganti File
+                </button>` : ''}
+            </div>
+        </div>
+
+        <!-- Status info banner -->
+        <div style="margin-top:12px;background:${st.bg};border-radius:9px;padding:11px 14px;font-size:13px;color:${st.color};display:flex;align-items:center;gap:8px;">
+            <span style="font-size:16px;">${st.icon}</span>
+            <span>${st.desc}</span>
+        </div>
+
+        ${ap.status === 'rejected' && ap.verifier_name ? `
+        <div style="margin-top:8px;background:var(--error-bg);border-radius:8px;padding:10px 13px;font-size:12px;color:var(--error);">
+            Ditolak oleh ${esc(ap.verifier_name)}
+        </div>` : ''}
+    </div>
+
+    <!-- Edit/Ganti file form (tersembunyi default) -->
+    <div id="editUploadWrap" style="display:${_payState.editMode ? '' : 'none'};border-top:1px solid var(--border);padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text-s);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+            ✏️ Ganti Bukti Pembayaran
+            <span style="font-size:11px;font-weight:400;color:var(--text-m)">— File lama akan digantikan dengan file baru</span>
+        </div>
+        ${renderUploadForm(true)}
+    </div>
+
+    <!-- Riwayat lainnya (jika ada lebih dari 1) -->
+    ${_payState.existingProofs.length > 1 ? renderProofHistory() : ''}`;
+}
+
+function renderUploadForm(isEdit) {
+    return `
+    <div id="uploadArea">
+        <div class="upload-zone" id="uploadZone"
+             onclick="document.getElementById('payFileInput').click()"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="handlePayDrop(event)">
+            <div style="font-size:36px;margin-bottom:8px;">📎</div>
+            <div style="font-weight:600;color:#475569;margin-bottom:4px;">${isEdit ? 'Pilih file pengganti' : 'Klik atau seret file ke sini'}</div>
+            <div style="font-size:12px;color:#94a3b8;">JPG, PNG, PDF — Maks. 5 MB</div>
+        </div>
+        <input type="file" id="payFileInput" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="previewPayFile(this)">
+
+        <div id="payFilePreview" style="display:none;margin-top:12px;">
+            <div style="display:flex;align-items:center;gap:12px;background:#f1f5f9;border-radius:10px;padding:12px 14px;">
+                <div style="font-size:28px;" id="payPreviewIcon">📄</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="payPreviewName">—</div>
+                    <div style="font-size:11px;color:#94a3b8;" id="payPreviewSize">—</div>
+                </div>
+                <button onclick="clearPayFile()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:4px;">✕</button>
+            </div>
+            <div style="margin-top:10px;">
+                <label style="font-size:12px;font-weight:600;color:#475569;display:block;margin-bottom:4px;">Catatan (opsional)</label>
+                <input type="text" id="payUploadNotes" placeholder="Misal: Transfer BCA tgl 28 Maret 2026" class="form-input" style="font-size:13px;">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+                <button onclick="doSubmitPayment()" id="btnSubmitPay"
+                    style="flex:1;padding:11px;background:var(--accent);color:white;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;">
+                    ${isEdit ? '🔄 Ganti Bukti Pembayaran' : '📤 Kirim Bukti Pembayaran'}
+                </button>
+                ${isEdit ? `<button onclick="cancelEditMode()" style="padding:11px 16px;background:var(--bg);color:var(--text-s);border:1px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;">Batal</button>` : ''}
+            </div>
+        </div>
+        <div id="payUploadMsg" style="display:none;margin-top:12px;"></div>
+    </div>`;
+}
+
+function renderProofHistory() {
+    const others = _payState.existingProofs.slice(1);
+    const statusMap = {
+        pending:  ['#fef3c7','#92400e','⏳'],
+        verified: ['#ecfdf5','#065f46','✅'],
+        rejected: ['#fef2f2','#dc2626','❌'],
+    };
+    return `
+    <div style="border-top:1px solid var(--border);padding:12px 16px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Riwayat Upload Sebelumnya</div>
+        ${others.map(p => {
+            const [bg,color,icon] = statusMap[p.status] || statusMap.pending;
+            const date = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+            return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);">
+                <a href="${esc(p.file_url)}" target="_blank" style="flex:1;font-size:12px;color:var(--accent);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;">📎 ${esc(p.file_name)}</a>
+                <span style="font-size:11px;color:var(--text-m);">${date}</span>
+                <span style="background:${bg};color:${color};border-radius:12px;padding:2px 8px;font-size:10px;font-weight:700;">${icon}</span>
+            </div>`;
+        }).join('')}
+    </div>`;
+}
+
+function toggleEditMode() {
+    _payState.editMode = true;
+    _payState.selectedFile = null;
+    const wrap = document.getElementById('editUploadWrap');
+    if (wrap) {
+        wrap.style.display = '';
+        wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    const btn = document.getElementById('btnToggleEdit');
+    if (btn) btn.style.display = 'none';
+}
+
+function cancelEditMode() {
+    _payState.editMode = false;
+    _payState.selectedFile = null;
+    // Re-render section tanpa reload dari server
+    renderProofSection();
+}
+
+function previewPayFile(input) {
     const file = input.files[0];
     if (!file) return;
-    selectedFile = file;
+    _payState.selectedFile = file;
     const isImg = file.type.startsWith('image/');
-    document.getElementById('previewIcon').textContent = isImg ? '🖼️' : '📄';
-    document.getElementById('previewName').textContent = file.name;
-    document.getElementById('previewSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-    document.getElementById('filePreview').style.display = '';
+    document.getElementById('payPreviewIcon').textContent = isImg ? '🖼️' : '📄';
+    document.getElementById('payPreviewName').textContent = file.name;
+    document.getElementById('payPreviewSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+    document.getElementById('payFilePreview').style.display = '';
 }
 
-function handleDrop(event) {
+function handlePayDrop(event) {
     event.preventDefault();
     const zone = document.getElementById('uploadZone');
-    zone.style.borderColor = '#cbd5e1';
-    zone.style.background  = '#f8fafc';
+    if (zone) zone.classList.remove('drag-over');
     const file = event.dataTransfer.files[0];
     if (!file) return;
     const dt = new DataTransfer();
     dt.items.add(file);
-    const input = document.getElementById('fileInput');
+    const input = document.getElementById('payFileInput');
     input.files = dt.files;
-    previewFile(input);
+    previewPayFile(input);
 }
 
-function clearFile() {
-    selectedFile = null;
-    document.getElementById('fileInput').value = '';
-    document.getElementById('filePreview').style.display = 'none';
+function clearPayFile() {
+    _payState.selectedFile = null;
+    const inp = document.getElementById('payFileInput');
+    if (inp) inp.value = '';
+    const prev = document.getElementById('payFilePreview');
+    if (prev) prev.style.display = 'none';
 }
 
-async function doUploadPayment(regId) {
-    if (!selectedFile) return;
-    const btn = document.getElementById('btnUpload');
-    const msg = document.getElementById('uploadMsg');
-    btn.disabled = true;
-    btn.textContent = '⏳ Mengunggah...';
-    msg.style.display = 'none';
+async function doSubmitPayment() {
+    if (!_payState.selectedFile || !_payState.regId) return;
+
+    const btn = document.getElementById('btnSubmitPay');
+    const msg = document.getElementById('payUploadMsg');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Mengunggah...'; }
+    if (msg) msg.style.display = 'none';
 
     try {
+        const isEdit = !!_payState.activeProof;
+
+        // Jika edit: hapus proof lama (hanya jika bukan verified)
+        if (isEdit && _payState.activeProof.status !== 'verified') {
+            const delRes = await fetch(`${API}/payment-proof/${_payState.activeProof.id}`, {
+                method: 'DELETE',
+                headers: HDR,
+            });
+            if (!delRes.ok) {
+                const delData = await delRes.json().catch(() => ({}));
+                throw new Error(delData.message || 'Gagal menghapus bukti lama');
+            }
+        }
+
+        // Upload file baru
         const form = new FormData();
-        form.append('student_registration_id', regId);
-        form.append('file', selectedFile);
-        const notes = document.getElementById('uploadNotes').value;
+        form.append('student_registration_id', _payState.regId);
+        form.append('file', _payState.selectedFile);
+        const notes = document.getElementById('payUploadNotes')?.value;
         if (notes) form.append('notes', notes);
 
         const res = await fetch(`${API}/payment-proof`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${TOKEN}`, 'Accept': 'application/json' },
-            body: form
+            body: form,
         });
         const d = await res.json();
         if (!res.ok) throw new Error(d.message || 'Gagal upload');
 
-        msg.innerHTML = `<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:12px 14px;font-size:13px;color:#065f46;font-weight:600;">✅ Bukti pembayaran berhasil diunggah! Tunggu verifikasi dari admin sekolah.</div>`;
-        msg.style.display = '';
-        clearFile();
-        loadPaymentProofs(regId);
+        showToast(isEdit ? 'Bukti berhasil diganti! ✓' : 'Bukti pembayaran berhasil dikirim! ✓', 'success');
+        _payState.editMode = false;
+        _payState.selectedFile = null;
+        await refreshProofSection(_payState.regId);
+
     } catch(e) {
-        msg.innerHTML = `<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:9px;padding:12px 14px;font-size:13px;color:#dc2626;">⚠️ ${e.message}</div>`;
-        msg.style.display = '';
-    } finally {
-        btn.disabled = false;
-        btn.textContent = '📤 Upload Sekarang';
-    }
-}
-
-async function loadPaymentProofs(regId) {
-    const container = document.getElementById('proofList');
-    if (!container) return;
-    try {
-        const res  = await fetch(`${API}/payment-proof?registration_id=${regId}`, { headers: HDR });
-        const data = await res.json();
-        const list = data.data || [];
-
-        if (!list.length) {
-            container.innerHTML = `<div style="text-align:center;padding:28px;color:#94a3b8;font-size:13px;">
-                <div style="font-size:32px;margin-bottom:8px;">📭</div>
-                Belum ada bukti yang diunggah.
-            </div>`;
-            return;
+        if (msg) {
+            msg.innerHTML = `<div style="background:var(--error-bg);border:1px solid #fecaca;border-radius:9px;padding:12px 14px;font-size:13px;color:var(--error);">⚠️ ${e.message}</div>`;
+            msg.style.display = '';
         }
-
-        const statusMap = {
-            pending:  ['#fef3c7','#92400e','⏳','Menunggu Verifikasi'],
-            verified: ['#ecfdf5','#065f46','✅','Terverifikasi'],
-            rejected: ['#fef2f2','#dc2626','❌','Ditolak'],
-        };
-
-        container.innerHTML = list.map(p => {
-            const [bg, color, icon, label] = statusMap[p.status] || statusMap.pending;
-            const date = p.created_at ? new Date(p.created_at).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-            const byLabel = p.uploaded_by === 'admin' ? '👤 Admin Sekolah' : '🎓 Siswa';
-            return `
-            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;background:#fff;">
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📎 ${esc(p.file_name)}</div>
-                        <div style="font-size:11px;color:#94a3b8;margin-top:2px;">Diupload ${byLabel} · ${date}</div>
-                        ${p.notes ? `<div style="font-size:12px;color:#64748b;margin-top:4px;">📝 ${esc(p.notes)}</div>` : ''}
-                    </div>
-                    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-                        <span style="background:${bg};color:${color};border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;">${icon} ${label}</span>
-                        <a href="${esc(p.file_url)}" target="_blank"
-                           style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:#475569;text-decoration:none;">
-                            👁 Lihat
-                        </a>
-                    </div>
-                </div>
-                ${p.status === 'rejected' && p.verifier_name ? `<div style="margin-top:8px;background:#fef2f2;border-radius:7px;padding:8px 10px;font-size:12px;color:#dc2626;">Ditolak oleh ${esc(p.verifier_name)}</div>` : ''}
-            </div>`;
-        }).join('');
-    } catch(e) {
-        container.innerHTML = `<div style="text-align:center;padding:20px;color:#dc2626;font-size:13px;">⚠️ Gagal memuat riwayat pembayaran.</div>`;
+        showToast(e.message, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = _payState.activeProof ? '🔄 Ganti Bukti Pembayaran' : '📤 Kirim Bukti Pembayaran'; }
     }
 }
 
@@ -869,7 +1003,6 @@ function renderProfil() {
     el.innerHTML = `
     <div class="page-header"><div class="page-title">Profil Saya</div></div>
 
-    <!-- Identitas akun -->
     <div class="card">
         <div class="card-head">
             <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent-h),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:white;flex-shrink:0">${esc((S.user?.name||'S').charAt(0).toUpperCase())}</div>
@@ -888,7 +1021,6 @@ function renderProfil() {
         </div>
     </div>
 
-    <!-- Ganti password -->
     <div class="card">
         <div class="card-head"><div class="card-title">🔒 Ganti Password</div></div>
         <div class="card-body">
@@ -960,8 +1092,14 @@ async function gantiPassword() {
             method: 'POST', headers: HDR,
             body: JSON.stringify({ password: np, password_confirmation: cp })
         });
-        if (res.ok) { showToast('Password berhasil diubah! ✓', 'success'); document.getElementById('newPass').value = ''; document.getElementById('confPass').value = ''; }
-        else { const d = await res.json(); showToast(d.message || 'Gagal mengubah password', 'error'); }
+        if (res.ok) {
+            showToast('Password berhasil diubah! ✓', 'success');
+            document.getElementById('newPass').value = '';
+            document.getElementById('confPass').value = '';
+        } else {
+            const d = await res.json();
+            showToast(d.message || 'Gagal mengubah password', 'error');
+        }
     } catch(e) { showToast('Koneksi error', 'error'); }
 }
 

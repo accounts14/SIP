@@ -23,8 +23,22 @@ class PaymentProofController extends Controller
         $query = PaymentProof::with(['studentRegistration', 'verifier']);
 
         if ($user->role === 'member') {
-            // Gunakan user_id (users.id) bukan student_id (user_candidates.id)
-            $query->where('user_id', $user->id);
+            if ($request->registration_id) {
+                // Jika filter by registration_id, pastikan registrasi ini memang milik user tsb
+                // lalu tampilkan SEMUA proof termasuk yang diupload admin
+                $ownReg = \DB::table('student_registrations')
+                    ->join('user_members', 'user_members.student_id', '=', 'student_registrations.student_id')
+                    ->where('user_members.user_id', $user->id)
+                    ->where('student_registrations.id', $request->registration_id)
+                    ->exists();
+                if (!$ownReg) {
+                    return response()->json(['data' => []], 200);
+                }
+                // Biarkan filter registration_id di bawah yang menangani
+            } else {
+                // Tanpa registration_id: filter by user_id seperti biasa
+                $query->where('user_id', $user->id);
+            }
         } elseif (in_array($user->role, ['admin:school_admin', 'admin:school_head'])) {
             $schoolId = $request->school_id ?? $user->school_id ?? null;
             if ($schoolId) {
